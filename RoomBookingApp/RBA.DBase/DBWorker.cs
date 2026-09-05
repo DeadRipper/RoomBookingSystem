@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.Logging;
+using RBA.DBase.DBRelations;
 using RBA.DBase.Managers;
 using RBA.Models.States;
 using System;
@@ -7,13 +8,14 @@ using System.Text;
 
 namespace RBA.DBase
 {
-    public class DBWorker(ILogger<DBWorker> logger) : IDBWorker
+    public class DBWorker(AppDbContext appDbContext, ILogger<DBWorker> logger) : IDBWorker
     {
         public async Task<RoomState> GetRoomState(int roomId)
         {
             try
             {
-                throw new NotImplementedException();
+                var rooms = appDbContext.Rooms.Where(xx => xx.RoomState == RoomState.Available).Select(x => x.Id).ToList();
+                return RoomState.Available;
             }
             catch
             {
@@ -23,6 +25,11 @@ namespace RBA.DBase
         }
 
         public async Task<BookState> BookingRoom(int roomId)
+        {
+            throw new NotImplementedException();
+        }
+
+        public async Task<BookState> UnbookingRoom(int roomId)
         {
             throw new NotImplementedException();
         }

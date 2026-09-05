@@ -37,5 +37,13 @@ namespace RBA.DBase
             logger.LogInformation($"End booking for room ID: {roomId}; Status: {roomState.ToString()}");
             return roomState;
         }
+
+        public async Task<BookState> UnbookRoom(int roomId)
+        {
+            logger.LogInformation($"Attempting to unbook room ID: {roomId}");
+            BookState roomState = await dbWorker.UnbookingRoom(roomId);
+            logger.LogInformation($"End unbooking for room ID: {roomId}; Status: {roomState.ToString()}");
+            return roomState;
+        }
     }
 }
