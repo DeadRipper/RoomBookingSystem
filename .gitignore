@@ -58,3 +58,10 @@ nunit-*.xml
 
 # vs
 *.vs/
+
+# Node / Vite frontend
+node_modules/
+dist/
+dist-ssr/
+*.local
+.vite/

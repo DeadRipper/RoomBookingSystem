@@ -1,0 +1,28 @@
+@import "tailwindcss";
+
+:root {
+  color-scheme: dark;
+}
+
+html,
+body,
+#root {
+  height: 100%;
+}
+
+body {
+  margin: 0;
+  background: #0b0e14;
+  color: #e6e8ee;
+  font-family: "Inter", system-ui, "Segoe UI", Roboto, sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+* {
+  scrollbar-color: #2a2f3d #0b0e14;
+}
+
+::selection {
+  background: #6366f1;
+  color: white;
+}
