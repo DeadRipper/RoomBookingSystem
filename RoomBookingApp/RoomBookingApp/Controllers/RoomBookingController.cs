@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using RBA.DBase.Managers;
+using RBA.Models.Request;
 using System.Reflection;
 
 namespace RoomBookingApp.Controllers
@@ -9,11 +10,11 @@ namespace RoomBookingApp.Controllers
     [ApiController]
     public class RoomBookingController(IRoomManagment _roomManagment) : ControllerBase
     {
-        [HttpPost]
-        public async Task<IActionResult> BookRoom(int roomId)
+        [HttpPost("BookRoom")]
+        public async Task<IActionResult> BookRoom([FromBody] BookRoomRequest request)
         {
-            await _roomManagment.BookRoom(roomId);
-            return Ok($"Room {roomId} booked successfully.");
+            await _roomManagment.BookRoom(request.RoomId);
+            return Ok($"Room {request.RoomId} booked successfully.");
         }
     }
 }
