@@ -1,5 +1,6 @@
 import { createContext, useContext, useEffect, useMemo, useState, type ReactNode } from "react";
 import type { Booking } from "../types";
+import { bookRoomOnServer, RoomBookingApiError } from "../api/roomBookingApi";
 
 const STORAGE_KEY = "rba_bookings_v1";
 const USER_KEY = "rba_user_v1";
@@ -65,7 +66,7 @@ interface BookingsContextValue {
   bookings: Booking[];
   currentUser: string;
   setCurrentUser: (name: string) => void;
-  addBooking: (booking: Omit<Booking, "id">) => Booking;
+  addBooking: (booking: Omit<Booking, "id">) => Promise<{ booking: Booking; serverError: string | null }>;
   cancelBooking: (id: string) => void;
   isSlotFree: (roomId: number, date: string, startMinutes: number, endMinutes: number) => boolean;
 }
@@ -89,10 +90,24 @@ export function BookingsProvider({ children }: { children: ReactNode }) {
       bookings,
       currentUser,
       setCurrentUser: setCurrentUserState,
-      addBooking: (booking) => {
+      addBooking: async (booking) => {
         const created: Booking = { ...booking, id: crypto.randomUUID() };
+
+        let serverError: string | null = null;
+        try {
+          await bookRoomOnServer(booking.roomId);
+        } catch (err) {
+          serverError =
+            err instanceof RoomBookingApiError
+              ? err.message
+              : "Unexpected error talking to the booking server.";
+        }
+
+        // The backend doesn't yet persist date/time/title, so the booking is
+        // always recorded locally too — this keeps the UI usable while the
+        // server-side room manager is still a stub.
         setBookings((prev) => [...prev, created]);
-        return created;
+        return { booking: created, serverError };
       },
       cancelBooking: (id) => {
         setBookings((prev) => prev.filter((b) => b.id !== id));

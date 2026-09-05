@@ -16,6 +16,7 @@ export default function RoomDetailPage() {
   const [selectedEnd, setSelectedEnd] = useState<number | null>(null);
   const [title, setTitle] = useState("");
   const [error, setError] = useState<string | null>(null);
+  const [submitting, setSubmitting] = useState(false);
 
   const date = isoDate(dayOffset);
   const slots = useMemo(() => buildDaySlots(), []);
@@ -63,13 +64,14 @@ export default function RoomDetailPage() {
     setSelectedEnd(newEnd);
   };
 
-  const handleBook = () => {
+  const handleBook = async () => {
     if (selectedStart === null || selectedEnd === null) return;
     if (!title.trim()) {
       setError("Give the meeting a title.");
       return;
     }
-    addBooking({
+    setSubmitting(true);
+    const { serverError } = await addBooking({
       roomId: room.id,
       date,
       startMinutes: selectedStart,
@@ -77,7 +79,12 @@ export default function RoomDetailPage() {
       title: title.trim(),
       bookedBy: currentUser,
     });
-    navigate("/bookings");
+    setSubmitting(false);
+    navigate("/bookings", {
+      state: serverError
+        ? { notice: `Saved locally — booking server said: ${serverError}` }
+        : undefined,
+    });
   };
 
   return (
@@ -179,9 +186,10 @@ export default function RoomDetailPage() {
                 <div className="flex gap-2">
                   <button
                     onClick={handleBook}
-                    className="rounded-lg bg-indigo-500 px-4 py-2 text-sm font-medium text-white hover:bg-indigo-400"
+                    disabled={submitting}
+                    className="rounded-lg bg-indigo-500 px-4 py-2 text-sm font-medium text-white hover:bg-indigo-400 disabled:cursor-not-allowed disabled:opacity-60"
                   >
-                    Confirm booking
+                    {submitting ? "Booking…" : "Confirm booking"}
                   </button>
                   <button
                     onClick={() => {
@@ -189,7 +197,8 @@ export default function RoomDetailPage() {
                       setSelectedEnd(null);
                       setError(null);
                     }}
-                    className="rounded-lg bg-white/5 px-4 py-2 text-sm text-slate-300 hover:bg-white/10"
+                    disabled={submitting}
+                    className="rounded-lg bg-white/5 px-4 py-2 text-sm text-slate-300 hover:bg-white/10 disabled:cursor-not-allowed disabled:opacity-60"
                   >
                     Cancel
                   </button>

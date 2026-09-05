@@ -1,10 +1,16 @@
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import { rooms } from "../data/rooms";
 import { useBookings } from "../store/BookingsContext";
 import { formatDateLabel, formatMinutes } from "../lib/time";
 
+interface NavState {
+  notice?: string;
+}
+
 export default function MyBookingsPage() {
   const { bookings, cancelBooking, currentUser } = useBookings();
+  const location = useLocation();
+  const notice = (location.state as NavState | null)?.notice;
 
   const mine = bookings
     .filter((b) => b.bookedBy === currentUser)
@@ -16,6 +22,12 @@ export default function MyBookingsPage() {
         <h1 className="text-2xl font-semibold tracking-tight text-slate-50">My Bookings</h1>
         <p className="mt-1 text-sm text-slate-400">Reservations made as {currentUser}.</p>
       </div>
+
+      {notice && (
+        <div className="rounded-xl border border-amber-400/20 bg-amber-500/10 px-4 py-3 text-sm text-amber-200">
+          {notice}
+        </div>
+      )}
 
       {mine.length === 0 ? (
         <div className="rounded-2xl border border-dashed border-white/10 p-10 text-center">
