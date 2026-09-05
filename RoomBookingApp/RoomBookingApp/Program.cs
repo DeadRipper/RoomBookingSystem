@@ -29,6 +29,11 @@ namespace RoomBookingApp
 
             var app = builder.Build();
 
+            using (var scope = app.Services.CreateScope())
+            {
+                scope.ServiceProvider.GetRequiredService<AppDbContext>().Database.EnsureCreated();
+            }
+
             // Configure the HTTP request pipeline.
             if (app.Environment.IsDevelopment())
             {
