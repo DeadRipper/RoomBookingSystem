@@ -1,6 +1,7 @@
 @RoomBookingApp_HostAddress = http://localhost:5037
 
-GET {{RoomBookingApp_HostAddress}}/weatherforecast/
+GET {{RoomBookingApp_HostAddress}}/roombooking/bookroom
 Accept: application/json
-
+Body:
+1
 ###

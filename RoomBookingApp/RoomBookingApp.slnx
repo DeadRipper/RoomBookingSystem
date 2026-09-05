@@ -1,3 +1,5 @@
 <Solution>
+  <Project Path="RBA.DBase/RBA.DBase.csproj" />
+  <Project Path="RBA.Models/RBA.Models.csproj" />
   <Project Path="RoomBookingApp/RoomBookingApp.csproj" />
 </Solution>

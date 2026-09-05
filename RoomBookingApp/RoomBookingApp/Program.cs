@@ -1,4 +1,7 @@
 
+using RBA.DBase;
+using RBA.DBase.Managers;
+
 namespace RoomBookingApp
 {
     public class Program
@@ -12,6 +15,9 @@ namespace RoomBookingApp
             builder.Services.AddControllers();
             // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
             builder.Services.AddOpenApi();
+
+            builder.Services.AddScoped<IRoomManagment, RoomManagment>();
+            builder.Services.AddScoped<IDBWorker, DBWorker>();
 
             var app = builder.Build();
 

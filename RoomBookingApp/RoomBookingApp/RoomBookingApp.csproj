@@ -13,10 +13,18 @@
 
   <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="10.0.10" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="10.0.11" />
+    <PackageReference Include="Microsoft.Extensions.Logging.ApplicationInsights" Version="2.23.0" />
+    <PackageReference Include="Microsoft.IdentityModel.LoggingExtensions" Version="8.22.0" />
   </ItemGroup>
 
   <ItemGroup>
     <ContainerPort Include="8081" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\RBA.DBase\RBA.DBase.csproj" />
+    <ProjectReference Include="..\RBA.Models\RBA.Models.csproj" />
   </ItemGroup>
 
 </Project>
