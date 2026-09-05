@@ -1,6 +1,8 @@
 
 using RBA.DBase;
+using RBA.DBase.DBRelations;
 using RBA.DBase.Managers;
+using Microsoft.EntityFrameworkCore;
 
 namespace RoomBookingApp
 {
@@ -16,10 +18,21 @@ namespace RoomBookingApp
             // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
             builder.Services.AddOpenApi();
 
+            builder.Services.AddDbContext<AppDbContext>((sp, options) =>
+            {
+                var config = sp.GetRequiredService<IConfiguration>();
+                var connectionString = config.GetConnectionString("ConnStr");
+                options.UseSqlServer(connectionString);
+            });
             builder.Services.AddScoped<IRoomManagment, RoomManagment>();
             builder.Services.AddScoped<IDBWorker, DBWorker>();
 
             var app = builder.Build();
+
+            using (var scope = app.Services.CreateScope())
+            {
+                scope.ServiceProvider.GetRequiredService<AppDbContext>().Database.EnsureCreated();
+            }
 
             // Configure the HTTP request pipeline.
             if (app.Environment.IsDevelopment())
