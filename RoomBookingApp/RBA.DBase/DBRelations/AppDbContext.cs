@@ -12,10 +12,15 @@ namespace RBA.DBase.DBRelations
         public DbSet<RoomModel> Rooms => Set<RoomModel>();
         public DbSet<ReservationModel> Reservations => Set<ReservationModel>();
 
-        public AppDbContext() => Database.EnsureCreated();
+        // Remove the IConfiguration from constructor
+        public AppDbContext(DbContextOptions<AppDbContext> options) : base(options)
+        {
+            Database.EnsureCreated();
+        }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
+            // Remove the connection string configuration here - let Program.cs handle it
             base.OnConfiguring(optionsBuilder);
         }
     }
