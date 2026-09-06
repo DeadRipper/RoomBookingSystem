@@ -11,6 +11,6 @@ namespace RBA.DBase.Managers
         Task<RoomState> GetRoomState(int roomId);
         Task<BookState> BookingRoom(int roomId);
         Task<BookState> UnbookingRoom(int roomId);
-        Task GetAllRooms();
+        Task<IEnumerable<RoomModel>> GetAllRooms();
     }
 }

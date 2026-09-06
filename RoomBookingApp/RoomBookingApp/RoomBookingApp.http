@@ -6,3 +6,7 @@ Content-Type: application/json
 
 {"roomId": 1}
 ###
+
+POST {{RoomBookingApp_HostAddress}}/api/GetRoomInfo/info
+Accept: application/json
+Content-Type: application/json

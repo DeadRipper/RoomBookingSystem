@@ -2,24 +2,28 @@
 using RBA.Models.States;
 using RBA.Models.Models;
 using Microsoft.Extensions.Logging;
+using System.Text.Json;
 
 namespace RBA.DBase
 {
-    public class RoomManagment : IRoomManagment
+    public class RoomManagment(IDBWorker dbWorker, ILogger<RoomManagment> logger) : IRoomManagment
     {
-        IDBWorker dbWorker;
-        ILogger<RoomManagment> logger;
-
-        public RoomManagment(IDBWorker _dBWorker, ILogger<RoomManagment> _logger)
+        public async Task<string> GetAllRooms()
         {
-            dbWorker = _dBWorker;
-            logger = _logger;
+            logger.LogInformation($"GetRoomInfo");
+            try
+            {
+                return JsonSerializer.Serialize(await dbWorker.GetAllRooms());
+            }
+            catch
+            {
+                return null;
+            }
         }
 
-        public async Task GetAllRooms()
+        public async Task<string> GetRoomInfo()
         {
-            //var roomState = await dbWorker.GetAllRooms();
-            await Task.FromResult(dbWorker.GetAllRooms());
+            return null;
         }
 
         public async Task<RoomState> CheckIfRoomIsAvailable(int roomId)

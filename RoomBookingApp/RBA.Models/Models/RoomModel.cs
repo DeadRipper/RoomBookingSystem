@@ -8,7 +8,11 @@ namespace RBA.Models.Models
     public class RoomModel
     {
         public int Id { get; set; }
-        public int RoomId { get; set; }
+        public string Name { get; set; }
+        public int Floor { get; set; }
+        public int Capacity { get; set; }
+        public AmenityModel Amenities { get; set; }
+        public string Image { get; set; }
         public RoomState RoomState { get; set; }
     }
 }

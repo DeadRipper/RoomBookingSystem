@@ -24,6 +24,7 @@ namespace RoomBookingApp
                 var connectionString = config.GetConnectionString("ConnStr");
                 options.UseSqlServer(connectionString);
             });
+
             builder.Services.AddScoped<IRoomManagment, RoomManagment>();
             builder.Services.AddScoped<IDBWorker, DBWorker>();
 

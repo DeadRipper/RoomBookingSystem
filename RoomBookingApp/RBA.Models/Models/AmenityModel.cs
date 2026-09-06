@@ -4,10 +4,9 @@ using System.Text;
 
 namespace RBA.Models.Models
 {
-    public class ReservationModel
+    public class AmenityModel
     {
         public int Id { get; set; }
-        public DateTime Date { get; set; }
-        public UserModel Users { get; set; }
+        public string Name { get; set; }
     }
 }

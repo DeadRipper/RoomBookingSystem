@@ -1,6 +1,8 @@
-﻿using Microsoft.Extensions.Logging;
+﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 using RBA.DBase.DBRelations;
 using RBA.DBase.Managers;
+using RBA.Models.Models;
 using RBA.Models.States;
 using System;
 using System.Collections.Generic;
@@ -34,9 +36,9 @@ namespace RBA.DBase
             throw new NotImplementedException();
         }
 
-        public async Task GetAllRooms()
+        public async Task<IEnumerable<RoomModel>> GetAllRooms()
         {
-            throw new NotImplementedException();
+            return await appDbContext.Rooms.Where(x => x.Id != 0).ToListAsync();
         }
     }
 }
