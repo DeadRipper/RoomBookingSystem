@@ -12,11 +12,11 @@ namespace RBA.DBase
 {
     public class DBWorker(AppDbContext appDbContext, ILogger<DBWorker> logger) : IDBWorker
     {
-        public async Task<RoomState> GetRoomState(int roomId)
+        public async Task<RoomState> GetRoomAvailabilityState(int roomId)
         {
             try
             {
-                var rooms = appDbContext.Rooms.Where(xx => xx.RoomState == RoomState.Available).Select(x => x.Id).ToList();
+                var a = appDbContext.Rooms?.Where(x => x.Id == roomId)?.Select(xx => xx.RoomState)?.FirstOrDefault() ?? RoomState.Occupied;
                 return RoomState.Available;
             }
             catch

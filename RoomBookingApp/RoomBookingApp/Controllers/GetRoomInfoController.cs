@@ -9,7 +9,7 @@ namespace RoomBookingApp.Controllers
     [ApiController]
     public class GetRoomInfoController(IRoomManagment _roomManagment) : ControllerBase
     {
-        [HttpPost("info")]
+        [HttpPost("roomInfo")]
         public async Task<IActionResult> RoomInfo()
         {
             return Ok(await _roomManagment.GetAllRooms() ?? "no rooms");

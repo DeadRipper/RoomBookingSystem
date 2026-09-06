@@ -11,14 +11,7 @@ namespace RBA.DBase
         public async Task<string> GetAllRooms()
         {
             logger.LogInformation($"GetRoomInfo");
-            try
-            {
-                return JsonSerializer.Serialize(await dbWorker.GetAllRooms());
-            }
-            catch
-            {
-                return null;
-            }
+            return JsonSerializer.Serialize(await dbWorker.GetAllRooms());
         }
 
         public async Task<string> GetRoomInfo()
@@ -29,7 +22,7 @@ namespace RBA.DBase
         public async Task<RoomState> CheckIfRoomIsAvailable(int roomId)
         {
             logger.LogInformation($"Checking availability for room ID: {roomId}");
-            RoomState roomState = await dbWorker.GetRoomState(roomId);
+            RoomState roomState = await dbWorker.GetRoomAvailabilityState(roomId);
             logger.LogInformation($"End checking availability for room ID: {roomId}; Status: {roomState.ToString()}");
             return roomState;
         }
