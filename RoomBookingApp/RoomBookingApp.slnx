@@ -1,4 +1,7 @@
 <Solution>
+  <Folder Name="/Tests/">
+    <Project Path="RBA.DBase.Tests/RBA.DBase.Tests.csproj" Id="d6ef8ebf-d400-49ba-8004-7dec214012f4" />
+  </Folder>
   <Project Path="RBA.DBase/RBA.DBase.csproj" />
   <Project Path="RBA.Models/RBA.Models.csproj" />
   <Project Path="RoomBookingApp/RoomBookingApp.csproj" />
