@@ -1,6 +1,8 @@
 @RoomBookingApp_HostAddress = http://localhost:5037
 
-GET {{RoomBookingApp_HostAddress}}/weatherforecast/
+POST {{RoomBookingApp_HostAddress}}/api/RoomBooking/checkAvailable
 Accept: application/json
+Content-Type: application/json
 
+{"roomId": 1}
 ###
