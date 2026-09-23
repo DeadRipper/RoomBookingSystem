@@ -17,6 +17,7 @@ export default function RoomDetailPage() {
   const [title, setTitle] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
+  const [failurePopup, setFailurePopup] = useState<string | null>(null);
 
   const date = isoDate(dayOffset);
   const slots = useMemo(() => buildDaySlots(), []);
@@ -71,7 +72,7 @@ export default function RoomDetailPage() {
       return;
     }
     setSubmitting(true);
-    const { serverError } = await addBooking({
+    const { booking, serverError } = await addBooking({
       roomId: room.id,
       date,
       startMinutes: selectedStart,
@@ -80,6 +81,14 @@ export default function RoomDetailPage() {
       bookedBy: currentUser,
     });
     setSubmitting(false);
+
+    if (!booking) {
+      // Server explicitly refused the booking — surface it and stay put
+      // rather than navigating away as if something had been saved.
+      setFailurePopup(serverError ?? "The booking server could not book this room.");
+      return;
+    }
+
     navigate("/bookings", {
       state: serverError
         ? { notice: `Saved locally — booking server said: ${serverError}` }
@@ -233,6 +242,21 @@ export default function RoomDetailPage() {
           ))}
         </div>
       </div>
+
+      {failurePopup && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4">
+          <div className="w-full max-w-sm rounded-2xl border border-rose-400/30 bg-slate-900 p-6 shadow-xl">
+            <h2 className="text-lg font-semibold text-rose-300">Booking failed</h2>
+            <p className="mt-2 text-sm text-slate-300">{failurePopup}</p>
+            <button
+              onClick={() => setFailurePopup(null)}
+              className="mt-5 w-full rounded-lg bg-white/5 px-4 py-2 text-sm text-slate-200 hover:bg-white/10"
+            >
+              Close
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

@@ -1,6 +1,6 @@
 import { createContext, useContext, useEffect, useMemo, useState, type ReactNode } from "react";
 import type { Booking } from "../types";
-import { bookRoomOnServer, RoomBookingApiError } from "../api/roomBookingApi";
+import { bookRoomOnServer, RoomBookingApiError, RoomBookingFailedError } from "../api/roomBookingApi";
 
 const STORAGE_KEY = "rba_bookings_v1";
 const USER_KEY = "rba_user_v1";
@@ -66,7 +66,9 @@ interface BookingsContextValue {
   bookings: Booking[];
   currentUser: string;
   setCurrentUser: (name: string) => void;
-  addBooking: (booking: Omit<Booking, "id">) => Promise<{ booking: Booking; serverError: string | null }>;
+  addBooking: (
+    booking: Omit<Booking, "id">,
+  ) => Promise<{ booking: Booking | null; serverError: string | null }>;
   cancelBooking: (id: string) => void;
   isSlotFree: (roomId: number, date: string, startMinutes: number, endMinutes: number) => boolean;
 }
@@ -91,8 +93,6 @@ export function BookingsProvider({ children }: { children: ReactNode }) {
       currentUser,
       setCurrentUser: setCurrentUserState,
       addBooking: async (booking) => {
-        const created: Booking = { ...booking, id: crypto.randomUUID() };
-
         let serverError: string | null = null;
         try {
           const bookingDate = new Date(`${booking.date}T00:00:00`);
@@ -103,14 +103,21 @@ export function BookingsProvider({ children }: { children: ReactNode }) {
             meetingTitle: booking.title,
           });
         } catch (err) {
+          if (err instanceof RoomBookingFailedError) {
+            // The server explicitly rejected the booking — don't pretend it
+            // succeeded by saving it locally, that would only confuse the user.
+            return { booking: null, serverError: err.message };
+          }
           serverError =
             err instanceof RoomBookingApiError
               ? err.message
               : "Unexpected error talking to the booking server.";
         }
 
-        // Recorded locally regardless of server outcome, so the UI stays
-        // usable even if the request fails (offline, validation, etc.).
+        // Recorded locally when the outcome is merely uncertain (offline,
+        // transport error), so the UI stays usable, but never for a booking
+        // the server actively refused.
+        const created: Booking = { ...booking, id: crypto.randomUUID() };
         setBookings((prev) => [...prev, created]);
         return { booking: created, serverError };
       },
