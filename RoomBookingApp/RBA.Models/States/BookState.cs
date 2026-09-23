@@ -8,6 +8,7 @@ namespace RBA.Models.States
     {
         Confirmed,
         Pending,
-        Cancelled
+        Cancelled,
+        Failed
     }
 }

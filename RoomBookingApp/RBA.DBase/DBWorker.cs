@@ -31,18 +31,18 @@ namespace RBA.DBase
         {
             try
             {
-                var f = appDbContext.Rooms.Select(x => x.Id == bookRoomRequest.RoomId);
-                if (f != null)
-                {
-                    appDbContext.Rooms.Where(x => x.Id == bookRoomRequest.RoomId).FirstOrDefault().RoomState = RoomState.Occupied;
-                    appDbContext.SaveChangesAsync();
-                }
+                var roomSearch = appDbContext.Rooms.Select(x => x.Id == bookRoomRequest.RoomId);
+                if (roomSearch != null && roomSearch.FirstOrDefault() == false)
+                    return BookState.Failed;
             }
             catch
             {
                 logger.LogError($"Error while booking room for Room ID: {bookRoomRequest.RoomId}");
                 throw;
             }
+
+            appDbContext.Rooms.Where(x => x.Id == bookRoomRequest.RoomId).FirstOrDefault().RoomState = RoomState.Occupied;
+            appDbContext.SaveChangesAsync();
             return BookState.Confirmed;
         }
 
