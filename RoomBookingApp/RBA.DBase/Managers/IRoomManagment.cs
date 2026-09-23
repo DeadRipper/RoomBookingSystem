@@ -10,7 +10,7 @@ namespace RBA.DBase.Managers
     {
         Task<RoomState> CheckIfRoomIsAvailable(int roomId);
         Task<BookState> BookRoom(BookRoomRequest bookRoomRequest);
-        Task<BookState> UnbookRoom(int roomId);
+        Task<BookState> UnbookRoom(UnbookRoomRequest unbookRoomRequest);
         Task<string> GetRoomInfo();
         Task<string> GetAllRooms();
     }

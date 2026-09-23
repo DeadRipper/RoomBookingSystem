@@ -41,14 +41,28 @@ namespace RBA.DBase
                 throw;
             }
 
-            appDbContext.Rooms.Where(x => x.Id == bookRoomRequest.RoomId).FirstOrDefault().RoomState = RoomState.Occupied;
-            appDbContext.SaveChangesAsync();
+            appDbContext?.Rooms?.Where(x => x.Id == bookRoomRequest.RoomId)?.FirstOrDefault()?.RoomState = RoomState.Occupied;
+            appDbContext?.SaveChangesAsync();
             return BookState.Confirmed;
         }
 
-        public async Task<BookState> UnbookingRoom(int roomId)
+        public async Task<BookState> UnbookingRoom(UnbookRoomRequest unbookRoomRequest)
         {
-            throw new NotImplementedException();
+            try
+            {
+                var roomSearch = appDbContext.Rooms.Select(x => x.Id == unbookRoomRequest.RoomId);
+                if (roomSearch != null && roomSearch.FirstOrDefault() == false)
+                    return BookState.Failed;
+
+            }
+            catch
+            {
+                logger.LogError($"Error while unbooking room for Room ID: {unbookRoomRequest.RoomId}");
+                throw;
+            }
+            appDbContext?.Rooms?.Where(x => x.Id == unbookRoomRequest.RoomId)?.FirstOrDefault()?.RoomState = RoomState.Available;
+            appDbContext?.SaveChangesAsync();
+            return BookState.Cancelled;
         }
 
         public async Task<IEnumerable<RoomModel>> GetAllRooms()

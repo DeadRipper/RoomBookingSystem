@@ -11,7 +11,7 @@ namespace RBA.DBase
     {
         public async Task<string> GetAllRooms()
         {
-            logger.LogInformation($"GetRoomInfo");
+            logger.LogInformation("Getting information for all rooms");
             return JsonSerializer.Serialize(await dbWorker.GetAllRooms());
         }
 
@@ -30,17 +30,17 @@ namespace RBA.DBase
 
         public async Task<BookState> BookRoom(BookRoomRequest bookRoomRequest)
         {
-            logger.LogInformation($"Attempting to book room ID: {bookRoomRequest.RoomId}");
+            logger.LogInformation("Attempting to book room ID: {RoomId}", bookRoomRequest.RoomId);
             BookState roomState = await dbWorker.BookingRoom(bookRoomRequest);
-            logger.LogInformation($"End booking for room ID: {bookRoomRequest.RoomId}; Status: {roomState.ToString()}");
+            logger.LogInformation("End booking for room ID: {RoomId}; Status: {roomState}", bookRoomRequest.RoomId, roomState);
             return roomState;
         }
 
-        public async Task<BookState> UnbookRoom(int roomId)
+        public async Task<BookState> UnbookRoom(UnbookRoomRequest unbookRoomRequest)
         {
-            logger.LogInformation($"Attempting to unbook room ID: {roomId}");
-            BookState roomState = await dbWorker.UnbookingRoom(roomId);
-            logger.LogInformation($"End unbooking for room ID: {roomId}; Status: {roomState.ToString()}");
+            logger.LogInformation("Attempting to unbook room ID: {RoomId}", unbookRoomRequest.RoomId);
+            BookState roomState = await dbWorker.UnbookingRoom(unbookRoomRequest);
+            logger.LogInformation("End unbooking for room ID: {RoomId}; Status: {roomState}", unbookRoomRequest.RoomId, roomState);
             return roomState;
         }
     }

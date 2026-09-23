@@ -44,11 +44,12 @@ namespace RoomBookingApp
 
             app.UseHttpsRedirection();
             app.UseMiddleware<LogRequestMiddleware>();
+            
 
             app.UseAuthorization();
 
             app.MapControllers();
-
+            //app.UseMiddleware<LogResponseMiddleware>();
             app.Run();
         }
     }
