@@ -95,7 +95,13 @@ export function BookingsProvider({ children }: { children: ReactNode }) {
 
         let serverError: string | null = null;
         try {
-          await bookRoomOnServer(booking.roomId);
+          const bookingDate = new Date(`${booking.date}T00:00:00`);
+          bookingDate.setMinutes(booking.startMinutes);
+          await bookRoomOnServer({
+            roomId: booking.roomId,
+            bookingDate: bookingDate.toISOString(),
+            meetingTitle: booking.title,
+          });
         } catch (err) {
           serverError =
             err instanceof RoomBookingApiError
@@ -103,9 +109,8 @@ export function BookingsProvider({ children }: { children: ReactNode }) {
               : "Unexpected error talking to the booking server.";
         }
 
-        // The backend doesn't yet persist date/time/title, so the booking is
-        // always recorded locally too — this keeps the UI usable while the
-        // server-side room manager is still a stub.
+        // Recorded locally regardless of server outcome, so the UI stays
+        // usable even if the request fails (offline, validation, etc.).
         setBookings((prev) => [...prev, created]);
         return { booking: created, serverError };
       },

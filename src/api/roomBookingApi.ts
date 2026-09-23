@@ -1,19 +1,28 @@
 // Thin client for the ASP.NET backend (RoomBookingApp.Controllers.RoomBookingController).
-// The backend currently only exposes booking-by-room-id with no date/time/title yet,
-// so this is called best-effort alongside the richer local booking model — see
-// BookingsContext.addBooking for how the two are combined.
+// BookRoomRequest now carries BookingDate and MeetingTitle alongside RoomId — see
+// BookingsContext.addBooking for how the local booking model maps onto this request.
 
-const BOOK_ROOM_URL = "/api/RoomBooking/BookRoom";
+const BOOK_ROOM_URL = "/api/RoomBooking/bookRoom";
 
 export class RoomBookingApiError extends Error {}
 
-export async function bookRoomOnServer(roomId: number): Promise<void> {
+export interface BookRoomParams {
+  roomId: number;
+  bookingDate: string; // ISO 8601 datetime
+  meetingTitle: string;
+}
+
+export async function bookRoomOnServer({
+  roomId,
+  bookingDate,
+  meetingTitle,
+}: BookRoomParams): Promise<void> {
   let response: Response;
   try {
     response = await fetch(BOOK_ROOM_URL, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ roomId }),
+      body: JSON.stringify({ roomId, bookingDate, meetingTitle }),
     });
   } catch (cause) {
     throw new RoomBookingApiError("Could not reach the booking server.", { cause });
