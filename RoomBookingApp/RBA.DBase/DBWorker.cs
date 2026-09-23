@@ -3,6 +3,7 @@ using Microsoft.Extensions.Logging;
 using RBA.DBase.DBRelations;
 using RBA.DBase.Managers;
 using RBA.Models.Models;
+using RBA.Models.Request;
 using RBA.Models.States;
 using System;
 using System.Collections.Generic;
@@ -26,9 +27,23 @@ namespace RBA.DBase
             }
         }
 
-        public async Task<BookState> BookingRoom(int roomId)
+        public async Task<BookState> BookingRoom(BookRoomRequest bookRoomRequest)
         {
-            throw new NotImplementedException();
+            try
+            {
+                var f = appDbContext.Rooms.Select(x => x.Id == bookRoomRequest.RoomId);
+                if (f != null)
+                {
+                    appDbContext.Rooms.Where(x => x.Id == bookRoomRequest.RoomId).FirstOrDefault().RoomState = RoomState.Occupied;
+                    appDbContext.SaveChangesAsync();
+                }
+            }
+            catch
+            {
+                logger.LogError($"Error while booking room for Room ID: {bookRoomRequest.RoomId}");
+                throw;
+            }
+            return BookState.Confirmed;
         }
 
         public async Task<BookState> UnbookingRoom(int roomId)

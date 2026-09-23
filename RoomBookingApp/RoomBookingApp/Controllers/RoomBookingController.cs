@@ -17,7 +17,7 @@ namespace RoomBookingApp.Controllers
             return Ok(new BookRoomResponse
             {
                 RoomId = request.RoomId,
-                BookState = await _roomManagment.BookRoom(request.RoomId)
+                BookState = await _roomManagment.BookRoom(request)
             });
         }
 

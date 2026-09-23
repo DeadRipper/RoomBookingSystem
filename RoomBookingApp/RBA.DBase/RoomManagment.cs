@@ -1,7 +1,8 @@
-﻿using RBA.DBase.Managers;
-using RBA.Models.States;
+﻿using Microsoft.Extensions.Logging;
+using RBA.DBase.Managers;
 using RBA.Models.Models;
-using Microsoft.Extensions.Logging;
+using RBA.Models.Request;
+using RBA.Models.States;
 using System.Text.Json;
 
 namespace RBA.DBase
@@ -27,11 +28,11 @@ namespace RBA.DBase
             return roomState;
         }
 
-        public async Task<BookState> BookRoom(int roomId)
+        public async Task<BookState> BookRoom(BookRoomRequest bookRoomRequest)
         {
-            logger.LogInformation($"Attempting to book room ID: {roomId}");
-            BookState roomState = await dbWorker.BookingRoom(roomId);
-            logger.LogInformation($"End booking for room ID: {roomId}; Status: {roomState.ToString()}");
+            logger.LogInformation($"Attempting to book room ID: {bookRoomRequest.RoomId}");
+            BookState roomState = await dbWorker.BookingRoom(bookRoomRequest);
+            logger.LogInformation($"End booking for room ID: {bookRoomRequest.RoomId}; Status: {roomState.ToString()}");
             return roomState;
         }
 
