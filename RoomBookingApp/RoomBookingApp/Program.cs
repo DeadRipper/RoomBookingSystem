@@ -3,6 +3,7 @@ using RBA.DBase;
 using RBA.DBase.DBRelations;
 using RBA.DBase.Managers;
 using Microsoft.EntityFrameworkCore;
+using RoomBookingApp.Middlewares;
 
 namespace RoomBookingApp
 {
@@ -42,9 +43,9 @@ namespace RoomBookingApp
             }
 
             app.UseHttpsRedirection();
+            app.UseMiddleware<LogRequestMiddleware>();
 
             app.UseAuthorization();
-
 
             app.MapControllers();
 
