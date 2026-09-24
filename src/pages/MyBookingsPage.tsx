@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { rooms } from "../data/rooms";
 import { useBookings } from "../store/BookingsContext";
@@ -11,6 +12,16 @@ export default function MyBookingsPage() {
   const { bookings, cancelBooking, currentUser } = useBookings();
   const location = useLocation();
   const notice = (location.state as NavState | null)?.notice;
+  const [error, setError] = useState<string | null>(null);
+  const [cancellingId, setCancellingId] = useState<string | null>(null);
+
+  const handleCancel = async (id: string) => {
+    setError(null);
+    setCancellingId(id);
+    const { serverError } = await cancelBooking(id);
+    setCancellingId(null);
+    if (serverError) setError(serverError);
+  };
 
   const mine = bookings
     .filter((b) => b.bookedBy === currentUser)
@@ -26,6 +37,12 @@ export default function MyBookingsPage() {
       {notice && (
         <div className="rounded-xl border border-amber-400/20 bg-amber-500/10 px-4 py-3 text-sm text-amber-200">
           {notice}
+        </div>
+      )}
+
+      {error && (
+        <div className="rounded-xl border border-rose-400/20 bg-rose-500/10 px-4 py-3 text-sm text-rose-200">
+          {error}
         </div>
       )}
 
@@ -56,10 +73,11 @@ export default function MyBookingsPage() {
                   </p>
                 </div>
                 <button
-                  onClick={() => cancelBooking(b.id)}
-                  className="shrink-0 rounded-lg bg-rose-500/10 px-3 py-1.5 text-sm font-medium text-rose-300 ring-1 ring-rose-400/20 hover:bg-rose-500/20"
+                  onClick={() => handleCancel(b.id)}
+                  disabled={cancellingId === b.id}
+                  className="shrink-0 rounded-lg bg-rose-500/10 px-3 py-1.5 text-sm font-medium text-rose-300 ring-1 ring-rose-400/20 hover:bg-rose-500/20 disabled:cursor-not-allowed disabled:opacity-50"
                 >
-                  Cancel
+                  {cancellingId === b.id ? "Cancelling…" : "Cancel"}
                 </button>
               </div>
             );

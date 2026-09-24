@@ -1,6 +1,11 @@
 import { createContext, useContext, useEffect, useMemo, useState, type ReactNode } from "react";
 import type { Booking } from "../types";
-import { bookRoomOnServer, RoomBookingApiError, RoomBookingFailedError } from "../api/roomBookingApi";
+import {
+  bookRoomOnServer,
+  unbookRoomOnServer,
+  RoomBookingApiError,
+  RoomBookingFailedError,
+} from "../api/roomBookingApi";
 
 const STORAGE_KEY = "rba_bookings_v1";
 const USER_KEY = "rba_user_v1";
@@ -69,7 +74,7 @@ interface BookingsContextValue {
   addBooking: (
     booking: Omit<Booking, "id">,
   ) => Promise<{ booking: Booking | null; serverError: string | null }>;
-  cancelBooking: (id: string) => void;
+  cancelBooking: (id: string) => Promise<{ serverError: string | null }>;
   isSlotFree: (roomId: number, date: string, startMinutes: number, endMinutes: number) => boolean;
 }
 
@@ -121,8 +126,22 @@ export function BookingsProvider({ children }: { children: ReactNode }) {
         setBookings((prev) => [...prev, created]);
         return { booking: created, serverError };
       },
-      cancelBooking: (id) => {
+      cancelBooking: async (id) => {
+        const booking = bookings.find((b) => b.id === id);
+        if (!booking) return { serverError: null };
+
+        try {
+          await unbookRoomOnServer({ roomId: booking.roomId });
+        } catch (err) {
+          const serverError =
+            err instanceof RoomBookingApiError
+              ? err.message
+              : "Unexpected error talking to the booking server.";
+          return { serverError };
+        }
+
         setBookings((prev) => prev.filter((b) => b.id !== id));
+        return { serverError: null };
       },
       isSlotFree: (roomId, date, startMinutes, endMinutes) =>
         !bookings.some(
