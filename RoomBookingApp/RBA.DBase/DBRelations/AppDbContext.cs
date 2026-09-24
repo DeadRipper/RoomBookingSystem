@@ -11,6 +11,7 @@ namespace RBA.DBase.DBRelations
         public DbSet<UserModel> Users => Set<UserModel>();
         public DbSet<RoomModel> Rooms => Set<RoomModel>();
         public DbSet<ReservationModel> Reservations => Set<ReservationModel>();
+        public DbSet<AmenityModel> Amenities => Set<AmenityModel>();
 
         public AppDbContext(DbContextOptions<AppDbContext> options) : base(options)
         {

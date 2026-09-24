@@ -4,9 +4,9 @@ using System.Collections.Generic;
 using System.Text;
 using System.Text.Json.Serialization;
 
-namespace RBA.Models.Request
+namespace RBA.Models.Request.BookRoom
 {
-    public class BookRoomResponse
+    public class BookRoomResponse : ResponseBase
     {
         public int? RoomId { get; set; }
         public BookState? BookState { get; set; }
