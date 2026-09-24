@@ -14,5 +14,6 @@ namespace RBA.Models.Models
         public AmenityModel Amenities { get; set; }
         public string Image { get; set; }
         public RoomState RoomState { get; set; }
+        public ICollection<ReservationModel> Reservations { get; set; }
     }
 }

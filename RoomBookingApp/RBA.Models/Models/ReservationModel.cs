@@ -9,5 +9,7 @@ namespace RBA.Models.Models
         public int Id { get; set; }
         public DateTime Date { get; set; }
         public UserModel Users { get; set; }
+        public int RoomId { get; set; }
+        public RoomModel Room { get; set; }
     }
 }

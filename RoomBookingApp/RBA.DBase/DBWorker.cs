@@ -19,7 +19,11 @@ namespace RBA.DBase
         {
             try
             {
-                var a = appDbContext.Rooms?.Where(x => x.Id == checkRoomAvailableRequest.RoomId)?.Select(xx => xx.RoomState)?.FirstOrDefault() ?? RoomState.Occupied;
+                var a = appDbContext.Rooms?.
+                    Where(x => 
+                    x.Id == checkRoomAvailableRequest.RoomId)?.
+                    Select(xx => 
+                    xx.RoomState)?.FirstOrDefault() ?? RoomState.Occupied;
                 return RoomState.Available;
             }
             catch
@@ -44,6 +48,11 @@ namespace RBA.DBase
             }
 
             appDbContext?.Rooms?.Where(x => x.Id == bookRoomRequest.RoomId)?.FirstOrDefault()?.RoomState = RoomState.Occupied;
+            appDbContext?.Reservations.Add(new ReservationModel
+            {
+                RoomId = bookRoomRequest.RoomId,
+                Date = bookRoomRequest.BookingDate,
+            });
             appDbContext?.SaveChangesAsync();
             return BookState.Confirmed;
         }

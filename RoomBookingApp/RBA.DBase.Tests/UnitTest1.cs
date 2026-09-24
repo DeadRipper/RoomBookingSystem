@@ -18,7 +18,7 @@ namespace RBA.DBase.Tests
                 .Options);
             _appDbContext.Rooms.Add(new RBA.Models.Models.RoomModel { Id = 1, RoomState = RBA.Models.States.RoomState.Available });
             _appDbContext.SaveChanges();
-            _mockDBWorker = new Mock<IDBWorker>().Setups()
+            _mockDBWorker = new Mock<IDBWorker>();
                 {
                                     
                 }
