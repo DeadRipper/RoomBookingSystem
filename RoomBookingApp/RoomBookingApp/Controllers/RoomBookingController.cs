@@ -24,11 +24,13 @@ namespace RoomBookingApp.Controllers
         [HttpPost("unbookRoom")]
         public async Task<IActionResult> UnbookRoom([FromBody] UnbookRoomRequest request)
         {
-            return Ok(new BookRoomResponse
-            {
-                RoomId = request.RoomId,
-                BookState = await _roomManagment.UnbookRoom(request)
-            });
+            _roomManagment.UnbookRoom(request);
+            return Ok();
+            //return Ok(new BookRoomResponse
+            //{
+            //    RoomId = request.RoomId,
+            //    BookState = await _roomManagment.UnbookRoom(request)
+            //});
         }
 
         [HttpPost("checkAvailable")]

@@ -31,8 +31,8 @@ namespace RBA.DBase
         {
             try
             {
-                var roomSearch = appDbContext.Rooms.Select(x => x.Id == bookRoomRequest.RoomId);
-                if (roomSearch != null && roomSearch.FirstOrDefault() == false)
+                var roomSearch = appDbContext.Rooms.Where(x => x.Id == bookRoomRequest.RoomId);
+                if (roomSearch != null && roomSearch.FirstOrDefault() == null)
                     return BookState.Failed;
             }
             catch
