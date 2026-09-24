@@ -4,8 +4,8 @@ using System.Text;
 
 namespace RBA.Models.Request
 {
-    public class UnbookRoomRequest : RequestBase
+    public class ResponseBase
     {
-        public int RoomId { get; set; }
+        public Guid RequestId { get; set; } = Guid.NewGuid();
     }
 }

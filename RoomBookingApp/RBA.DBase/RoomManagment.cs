@@ -1,7 +1,9 @@
 ﻿using Microsoft.Extensions.Logging;
 using RBA.DBase.Managers;
 using RBA.Models.Models;
-using RBA.Models.Request;
+using RBA.Models.Request.BookRoom;
+using RBA.Models.Request.CheckRoomAvailable;
+using RBA.Models.Request.UnbookRoom;
 using RBA.Models.States;
 using System.Text.Json;
 
@@ -20,11 +22,11 @@ namespace RBA.DBase
             return null;
         }
 
-        public async Task<RoomState> CheckIfRoomIsAvailable(int roomId)
+        public async Task<RoomState> CheckIfRoomIsAvailable(CheckRoomAvailableRequest checkRoomAvailableRequest)
         {
-            logger.LogInformation($"Checking availability for room ID: {roomId}");
-            RoomState roomState = await dbWorker.GetRoomAvailabilityState(roomId);
-            logger.LogInformation($"End checking availability for room ID: {roomId}; Status: {roomState.ToString()}");
+            logger.LogInformation($"Checking availability for room ID: {checkRoomAvailableRequest.RoomId}");
+            RoomState roomState = await dbWorker.GetRoomAvailabilityState(checkRoomAvailableRequest);  
+            logger.LogInformation($"End checking availability for room ID: {checkRoomAvailableRequest.RoomId}; Status: {roomState.ToString()}");
             return roomState;
         }
 

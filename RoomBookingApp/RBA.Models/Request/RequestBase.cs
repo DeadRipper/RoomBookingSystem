@@ -6,6 +6,6 @@ namespace RBA.Models.Request
 {
     public class RequestBase
     {
-        public Guid RequestId { get; set; }
+        public Guid RequestId { get; set; } = Guid.NewGuid();
     }
 }

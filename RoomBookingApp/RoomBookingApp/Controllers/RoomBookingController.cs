@@ -1,7 +1,9 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using RBA.DBase.Managers;
-using RBA.Models.Request;
+using RBA.Models.Request.BookRoom;
+using RBA.Models.Request.CheckRoomAvailable;
+using RBA.Models.Request.UnbookRoom;
 using RoomBookingApp.Helpers;
 using System.Reflection;
 
@@ -14,32 +16,32 @@ namespace RoomBookingApp.Controllers
         [HttpPost("bookRoom")]
         public async Task<IActionResult> BookRoom([FromBody] BookRoomRequest request)
         {
-            return Ok(new BookRoomResponse
+            return Ok(JsonBuildHelper.BuildJsonResponse(new BookRoomResponse
             {
+                RequestId = request.RequestId,
                 RoomId = request.RoomId,
                 BookState = await _roomManagment.BookRoom(request)
-            });
+            }));
         }
 
         [HttpPost("unbookRoom")]
         public async Task<IActionResult> UnbookRoom([FromBody] UnbookRoomRequest request)
         {
-            _roomManagment.UnbookRoom(request);
-            return Ok();
-            //return Ok(new BookRoomResponse
-            //{
-            //    RoomId = request.RoomId,
-            //    BookState = await _roomManagment.UnbookRoom(request)
-            //});
+            return Ok(JsonBuildHelper.BuildJsonResponse(new UnbookRoomResponse
+            {
+                RequestId = request.RequestId,
+                RoomId = request.RoomId,
+                BookState = await _roomManagment.UnbookRoom(request)
+            }));
         }
 
         [HttpPost("checkAvailable")]
-        public async Task<IActionResult> CheckAvailable([FromBody] BookRoomRequest request)
+        public async Task<IActionResult> CheckAvailable([FromBody] CheckRoomAvailableRequest request)
         {
-            return Ok(JsonBuildHelper.BuildJsonResponse(new BookRoomResponse
+            return Ok(JsonBuildHelper.BuildJsonResponse(new CheckRoomAvailableResponse
             {
-                RoomId = request.RoomId,
-                RoomState = await _roomManagment.CheckIfRoomIsAvailable(request.RoomId)
+                RequestId = request.RequestId,
+                roomState = await _roomManagment.CheckIfRoomIsAvailable(request)
             }));
         }
     }
