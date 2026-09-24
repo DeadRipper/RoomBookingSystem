@@ -47,13 +47,19 @@ namespace RBA.DBase
                 throw;
             }
 
-            appDbContext?.Rooms?.Where(x => x.Id == bookRoomRequest.RoomId)?.FirstOrDefault()?.RoomState = RoomState.Occupied;
-            appDbContext?.Reservations.Add(new ReservationModel
+            var room = appDbContext.Rooms.FirstOrDefault(x => x.Id == bookRoomRequest.RoomId);
+            if (room != null)
+                room.RoomState = RoomState.Occupied;
+
+            var reservation = new ReservationModel
             {
                 RoomId = bookRoomRequest.RoomId,
                 Date = bookRoomRequest.BookingDate,
-            });
-            appDbContext?.SaveChangesAsync();
+            };
+            appDbContext.Reservations.Add(reservation);
+            appDbContext.Entry(reservation).Property("UsersId").CurrentValue = bookRoomRequest.UserId;
+
+            await appDbContext.SaveChangesAsync();
             return BookState.Confirmed;
         }
 
@@ -71,8 +77,11 @@ namespace RBA.DBase
                 logger.LogError($"Error while unbooking room for Room ID: {unbookRoomRequest.RoomId}");
                 throw;
             }
-            appDbContext?.Rooms?.Where(x => x.Id == unbookRoomRequest.RoomId)?.FirstOrDefault()?.RoomState = RoomState.Available;
-            appDbContext?.SaveChangesAsync();
+            var room = appDbContext.Rooms.FirstOrDefault(x => x.Id == unbookRoomRequest.RoomId);
+            if (room != null)
+                room.RoomState = RoomState.Available;
+
+            await appDbContext.SaveChangesAsync();
             return BookState.Cancelled;
         }
 

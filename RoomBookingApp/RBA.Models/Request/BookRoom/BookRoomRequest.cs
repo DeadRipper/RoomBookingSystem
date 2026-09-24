@@ -9,5 +9,7 @@ namespace RBA.Models.Request.BookRoom
         public int RoomId { get; set; }
         public DateTime BookingDate { get; set; }
         public string MeetingTitle { get; set; }
+        public int UserId { get; set; }
+        public string UserName { get; set; }
     }
 }
