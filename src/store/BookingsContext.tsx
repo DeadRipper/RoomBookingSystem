@@ -3,6 +3,7 @@ import type { Booking } from "../types";
 import {
   bookRoomOnServer,
   unbookRoomOnServer,
+  changeBookingOnServer,
   RoomBookingApiError,
   RoomBookingFailedError,
 } from "../api/roomBookingApi";
@@ -75,7 +76,17 @@ interface BookingsContextValue {
     booking: Omit<Booking, "id">,
   ) => Promise<{ booking: Booking | null; serverError: string | null }>;
   cancelBooking: (id: string) => Promise<{ serverError: string | null }>;
-  isSlotFree: (roomId: number, date: string, startMinutes: number, endMinutes: number) => boolean;
+  updateBooking: (
+    id: string,
+    changes: Pick<Booking, "title" | "date" | "startMinutes" | "endMinutes">,
+  ) => Promise<{ serverError: string | null }>;
+  isSlotFree: (
+    roomId: number,
+    date: string,
+    startMinutes: number,
+    endMinutes: number,
+    ignoreBookingId?: string,
+  ) => boolean;
 }
 
 const BookingsContext = createContext<BookingsContextValue | null>(null);
@@ -106,6 +117,7 @@ export function BookingsProvider({ children }: { children: ReactNode }) {
             roomId: booking.roomId,
             bookingDate: bookingDate.toISOString(),
             meetingTitle: booking.title,
+            userName: currentUser,
           });
         } catch (err) {
           if (err instanceof RoomBookingFailedError) {
@@ -143,9 +155,35 @@ export function BookingsProvider({ children }: { children: ReactNode }) {
         setBookings((prev) => prev.filter((b) => b.id !== id));
         return { serverError: null };
       },
-      isSlotFree: (roomId, date, startMinutes, endMinutes) =>
+      updateBooking: async (id, changes) => {
+        const booking = bookings.find((b) => b.id === id);
+        if (!booking) return { serverError: null };
+
+        try {
+          const bookingDate = new Date(`${changes.date}T00:00:00`);
+          bookingDate.setMinutes(changes.startMinutes);
+          await changeBookingOnServer({
+            roomId: booking.roomId,
+            bookingDate: bookingDate.toISOString(),
+            userName: currentUser,
+          });
+        } catch (err) {
+          // Server refused or is unreachable - keep the original booking.
+          return {
+            serverError:
+              err instanceof RoomBookingApiError
+                ? err.message
+                : "Unexpected error talking to the booking server.",
+          };
+        }
+
+        setBookings((prev) => prev.map((b) => (b.id === id ? { ...b, ...changes } : b)));
+        return { serverError: null };
+      },
+      isSlotFree: (roomId, date, startMinutes, endMinutes, ignoreBookingId) =>
         !bookings.some(
           (b) =>
+            b.id !== ignoreBookingId &&
             b.roomId === roomId &&
             b.date === date &&
             startMinutes < b.endMinutes &&

@@ -1,9 +1,15 @@
 // Thin client for the ASP.NET backend (RoomBookingApp.Controllers.RoomBookingController).
 // BookRoomRequest now carries BookingDate and MeetingTitle alongside RoomId — see
 // BookingsContext.addBooking for how the local booking model maps onto this request.
+//
+// UserId is hardcoded to 1 below: the backend added a required UsersId FK on
+// Reservations, but there's no user lookup/auth in the app yet, so we can't
+// resolve the "Booking as" name to a real DB user id. Revisit once a Users
+// endpoint exists.
 
 const BOOK_ROOM_URL = "/api/RoomBooking/bookRoom";
 const UNBOOK_ROOM_URL = "/api/RoomBooking/unbookRoom";
+const CHANGE_BOOKING_URL = "/api/RoomBooking/changeBookingSettings";
 
 export class RoomBookingApiError extends Error {}
 
@@ -17,7 +23,12 @@ export interface BookRoomParams {
   roomId: number;
   bookingDate: string; // ISO 8601 datetime
   meetingTitle: string;
+  userName: string;
 }
+
+// See the module-level comment above: there's no user lookup yet, so every
+// booking is attributed to this fixed backend user id.
+const HARDCODED_USER_ID = 1;
 
 // Mirrors RBA.Models.States.BookState. System.Text.Json serializes enums as
 // their numeric value by default (no JsonStringEnumConverter is registered).
@@ -58,13 +69,20 @@ export async function bookRoomOnServer({
   roomId,
   bookingDate,
   meetingTitle,
+  userName,
 }: BookRoomParams): Promise<void> {
   let response: Response;
   try {
     response = await fetch(BOOK_ROOM_URL, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ roomId, bookingDate, meetingTitle }),
+      body: JSON.stringify({
+        roomId,
+        bookingDate,
+        meetingTitle,
+        userId: HARDCODED_USER_ID,
+        userName,
+      }),
     });
   } catch (cause) {
     throw new RoomBookingApiError("Could not reach the booking server.", { cause });
@@ -119,5 +137,58 @@ export async function unbookRoomOnServer({ roomId }: UnbookRoomParams): Promise<
   );
   if (result?.BookState === BookState.Failed) {
     throw new RoomBookingFailedError(`Booking server could not unbook room ${roomId}.`);
+  }
+}
+
+// Mirrors RBA.Models.States.ChangesState (note the backend's "Penging" typo).
+const ChangesState = {
+  Accepted: 0,
+  Pending: 1,
+  Applied: 2,
+  NotApplied: 3,
+  Failed: 4,
+} as const;
+
+export interface ChangeBookingParams {
+  roomId: number;
+  bookingDate: string; // ISO 8601 datetime
+  userName: string;
+}
+
+// Unlike the other endpoints, changeBookingSettings returns Ok(ChangesState)
+// directly, so the body is a plain JSON number rather than a doubly-encoded
+// string. The backend only queues the change (Accepted) - it isn't applied yet.
+export async function changeBookingOnServer({
+  roomId,
+  bookingDate,
+  userName,
+}: ChangeBookingParams): Promise<void> {
+  let response: Response;
+  try {
+    response = await fetch(CHANGE_BOOKING_URL, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        roomId,
+        date: bookingDate,
+        users: { id: HARDCODED_USER_ID, userName },
+      }),
+    });
+  } catch (cause) {
+    throw new RoomBookingApiError("Could not reach the booking server.", { cause });
+  }
+
+  if (!response.ok) {
+    const errorText = await response.text().catch(() => "");
+    throw new RoomBookingApiError(
+      `Booking server rejected changes to room ${roomId} (${response.status}): ${errorText}`,
+    );
+  }
+
+  const state = await response.json().catch(() => null);
+  if (state === ChangesState.Failed || state === ChangesState.NotApplied) {
+    throw new RoomBookingFailedError(
+      `Booking server could not change the booking for room ${roomId}.`,
+    );
   }
 }
