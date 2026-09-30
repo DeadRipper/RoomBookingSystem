@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using RBA.DBase.Managers;
 using RBA.Models.Request.BookRoom;
+using RBA.Models.Request.ChangeBookingSettings;
 using RBA.Models.Request.CheckRoomAvailable;
 using RBA.Models.Request.UnbookRoom;
 using RoomBookingApp.Helpers;
@@ -33,6 +34,12 @@ namespace RoomBookingApp.Controllers
                 RoomId = request.RoomId,
                 BookState = await _roomManagment.UnbookRoom(request)
             }));
+        }
+
+        [HttpPost("changeBookingSettings")]
+        public async Task<IActionResult> ChangeBookingSettings([FromBody] ChangeBookingSettingsRequest request)
+        {
+            return Ok(await _roomManagment.ChangeBookingSettings(request));
         }
 
         [HttpPost("checkAvailable")]
