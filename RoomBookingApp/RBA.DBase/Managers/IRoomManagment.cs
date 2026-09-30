@@ -1,4 +1,5 @@
 ﻿using RBA.Models.Request.BookRoom;
+using RBA.Models.Request.ChangeBookingSettings;
 using RBA.Models.Request.CheckRoomAvailable;
 using RBA.Models.Request.UnbookRoom;
 using RBA.Models.States;
@@ -13,6 +14,7 @@ namespace RBA.DBase.Managers
         Task<RoomState> CheckIfRoomIsAvailable(CheckRoomAvailableRequest checkRoomAvailableRequest);
         Task<BookState> BookRoom(BookRoomRequest bookRoomRequest);
         Task<BookState> UnbookRoom(UnbookRoomRequest unbookRoomRequest);
+        Task<ChangesState> ChangeBookingSettings(ChangeBookingSettingsRequest changeBookingSettingsRequest);
         Task<string> GetRoomInfo();
         Task<string> GetAllRooms();
     }

@@ -1,7 +1,9 @@
 ﻿using Microsoft.Extensions.Logging;
+using RBA.CacheBookings;
 using RBA.DBase.Managers;
 using RBA.Models.Models;
 using RBA.Models.Request.BookRoom;
+using RBA.Models.Request.ChangeBookingSettings;
 using RBA.Models.Request.CheckRoomAvailable;
 using RBA.Models.Request.UnbookRoom;
 using RBA.Models.States;
@@ -9,7 +11,7 @@ using System.Text.Json;
 
 namespace RBA.DBase
 {
-    public class RoomManagment(IDBWorker dbWorker, ILogger<RoomManagment> logger) : IRoomManagment
+    public class RoomManagment(ICacheWorker cacheWorker, IDBWorker dbWorker, ILogger<RoomManagment> logger) : IRoomManagment
     {
         public async Task<string> GetAllRooms()
         {
@@ -44,6 +46,14 @@ namespace RBA.DBase
             BookState roomState = await dbWorker.UnbookingRoom(unbookRoomRequest);
             logger.LogInformation("End unbooking for room ID: {RoomId}; Status: {roomState}", unbookRoomRequest.RoomId, roomState);
             return roomState;
+        }
+
+        public async Task<ChangesState> ChangeBookingSettings(ChangeBookingSettingsRequest changeBookingSettingsRequest)
+        {
+            logger.LogInformation("Attempting to change booking settings for room ID: {RoomId}", changeBookingSettingsRequest.RoomId);
+            cacheWorker.InsertNewChanges(changeBookingSettingsRequest);
+            logger.LogInformation("End changing booking settings for room ID: {RoomId}; Status: {changesState}", changeBookingSettingsRequest.RoomId, ChangesState.Accepted);
+            return ChangesState.Accepted;
         }
     }
 }
