@@ -8,6 +8,6 @@ namespace RBA.CacheBookings
 {
     public class ChangesCluster
     {
-        public ConcurrentDictionary<Guid, ChangeBookingSettingsRequest> ChangeBookingSettingsRequest { get; set; }
+        public ConcurrentDictionary<Guid, ChangeBookingSettingsRequest> ChangeBookingSettingsRequest { get; set; } = new ConcurrentDictionary<Guid, ChangeBookingSettingsRequest>();
     }
 }

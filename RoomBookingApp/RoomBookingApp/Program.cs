@@ -4,6 +4,7 @@ using RBA.DBase.DBRelations;
 using RBA.DBase.Managers;
 using Microsoft.EntityFrameworkCore;
 using RoomBookingApp.Middlewares;
+using RBA.CacheBookings;
 
 namespace RoomBookingApp
 {
@@ -28,6 +29,7 @@ namespace RoomBookingApp
 
             builder.Services.AddScoped<IRoomManagment, RoomManagment>();
             builder.Services.AddScoped<IDBWorker, DBWorker>();
+            builder.Services.AddSingleton<ICacheWorker, CBWorker>();
 
             var app = builder.Build();
 
