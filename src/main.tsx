@@ -4,13 +4,16 @@ import { BrowserRouter } from "react-router-dom";
 import "./index.css";
 import App from "./App.tsx";
 import { BookingsProvider } from "./store/BookingsContext";
+import { RoomsProvider } from "./store/RoomsContext";
 
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
     <BrowserRouter>
-      <BookingsProvider>
-        <App />
-      </BookingsProvider>
+      <RoomsProvider>
+        <BookingsProvider>
+          <App />
+        </BookingsProvider>
+      </RoomsProvider>
     </BrowserRouter>
   </StrictMode>,
 );

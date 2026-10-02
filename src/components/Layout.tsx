@@ -9,7 +9,7 @@ const navLinkClass = ({ isActive }: { isActive: boolean }) =>
   }`;
 
 export default function Layout() {
-  const { currentUser, setCurrentUser } = useBookings();
+  const { currentUser } = useBookings();
 
   return (
     <div className="min-h-screen bg-[#0b0e14] text-slate-100">
@@ -30,6 +30,9 @@ export default function Layout() {
             </NavLink>
             <NavLink to="/bookings" className={navLinkClass}>
               My Bookings
+              </NavLink>
+              <NavLink to="/admin" className={navLinkClass}>
+                Admin
             </NavLink>
           </nav>
 
@@ -37,8 +40,8 @@ export default function Layout() {
             <span className="hidden text-sm text-slate-500 sm:inline">Booking as</span>
             <input
               value={currentUser}
-              onChange={(e) => setCurrentUser(e.target.value || "Guest")}
-              className="w-28 rounded-lg border border-white/10 bg-white/5 px-2.5 py-1.5 text-sm text-slate-100 outline-none focus:border-indigo-400/60 focus:ring-1 focus:ring-indigo-400/40"
+              readOnly
+              className="w-28 cursor-default rounded-lg border border-white/10 bg-white/5 px-2.5 py-1.5 text-sm text-slate-100 outline-none"
             />
           </div>
         </div>

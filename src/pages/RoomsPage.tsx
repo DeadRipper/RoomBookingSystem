@@ -1,6 +1,6 @@
 import { useMemo, useState } from "react";
 import RoomCard from "../components/RoomCard";
-import { rooms } from "../data/rooms";
+import { useRooms } from "../store/RoomsContext";
 import { useBookings } from "../store/BookingsContext";
 import { isoDate } from "../lib/time";
 
@@ -8,6 +8,7 @@ export default function RoomsPage() {
   const [query, setQuery] = useState("");
   const [minCapacity, setMinCapacity] = useState(0);
   const { bookings } = useBookings();
+  const { rooms } = useRooms();
 
   const nowMinutes = new Date().getHours() * 60 + new Date().getMinutes();
   const today = isoDate();
@@ -18,7 +19,7 @@ export default function RoomsPage() {
         (r) =>
           r.name.toLowerCase().includes(query.toLowerCase()) && r.capacity >= minCapacity,
       ),
-    [query, minCapacity],
+    [rooms, query, minCapacity],
   );
 
   const isFreeNow = (roomId: number) =>

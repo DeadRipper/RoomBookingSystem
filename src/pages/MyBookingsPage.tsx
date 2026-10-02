@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Link, useLocation } from "react-router-dom";
-import { rooms } from "../data/rooms";
+import { useRooms } from "../store/RoomsContext";
 import { useBookings } from "../store/BookingsContext";
 import { buildDaySlots, formatDateLabel, formatMinutes, isoDate } from "../lib/time";
 import type { Booking } from "../types";
@@ -11,6 +11,7 @@ interface NavState {
 
 export default function MyBookingsPage() {
   const { bookings, cancelBooking, updateBooking, isSlotFree, currentUser } = useBookings();
+  const { rooms } = useRooms();
   const location = useLocation();
   const notice = (location.state as NavState | null)?.notice;
   const [error, setError] = useState<string | null>(null);

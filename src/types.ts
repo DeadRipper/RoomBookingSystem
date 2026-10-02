@@ -1,10 +1,5 @@
-export type Amenity =
-  | "TV Screen"
-  | "Video Conferencing"
-  | "Whiteboard"
-  | "Projector"
-  | "Phone"
-  | "Wheelchair Access";
+// Amenity names come from the backend (AmenityModel.Name), so they are free-form.
+export type Amenity = string;
 
 export interface Room {
   id: number;

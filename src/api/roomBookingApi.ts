@@ -1,3 +1,5 @@
+import type { Room } from "../types";
+
 // Thin client for the ASP.NET backend (RoomBookingApp.Controllers.RoomBookingController).
 // BookRoomRequest now carries BookingDate and MeetingTitle alongside RoomId — see
 // BookingsContext.addBooking for how the local booking model maps onto this request.
@@ -191,4 +193,73 @@ export async function changeBookingOnServer({
       `Booking server could not change the booking for room ${roomId}.`,
     );
   }
+}
+
+// --- Room info (GetRoomInfoController.roomInfo) ---------------------------
+// Returns Ok(string) where the string is System.Text.Json output of the
+// RoomModel list (PascalCase, enums numeric, Floor is an int, Amenities is a
+// single AmenityModel). A null result yields the literal text "no rooms".
+
+const ROOM_INFO_URL = "/api/GetRoomInfo/roomInfo";
+
+interface RoomModelDto {
+  Id?: number;
+  Name?: string;
+  Floor?: number;
+  Capacity?: number;
+  Amenities?: { Id?: number; Name?: string } | null;
+  Image?: string | null;
+}
+
+export async function fetchRoomsFromServer(): Promise<Room[]> {
+  let response: Response;
+  try {
+    response = await fetch(ROOM_INFO_URL, { method: "POST" });
+  } catch (cause) {
+    throw new RoomBookingApiError("Could not reach the booking server.", { cause });
+  }
+  if (!response.ok) {
+    throw new RoomBookingApiError(`Booking server could not list rooms (${response.status}).`);
+  }
+
+  const text = await response.text();
+  let dtos: unknown;
+  try {
+    dtos = JSON.parse(text);
+  } catch {
+    return []; // "no rooms"
+  }
+  if (!Array.isArray(dtos)) return [];
+
+  return (dtos as RoomModelDto[]).map((d) => ({
+    id: d.Id ?? 0,
+    name: d.Name ?? `Room ${d.Id}`,
+    floor: `Floor ${d.Floor ?? "?"}`,
+    capacity: d.Capacity ?? 0,
+    amenities: d.Amenities?.Name ? [d.Amenities.Name] : [],
+    image: d.Image ?? "",
+  }));
+}
+
+// --- Admin login (AdminController.login) ----------------------------------
+// 200 OK on success, 401 Unauthorized on a bad id/password.
+
+const ADMIN_LOGIN_URL = "/api/Admin/login";
+
+export async function adminLogin(id: number, password: string): Promise<boolean> {
+  let response: Response;
+  try {
+    response = await fetch(ADMIN_LOGIN_URL, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ id, password }),
+    });
+  } catch (cause) {
+    throw new RoomBookingApiError("Could not reach the booking server.", { cause });
+  }
+  if (response.status === 401) return false;
+  if (!response.ok) {
+    throw new RoomBookingApiError(`Login failed (${response.status}).`);
+  }
+  return true;
 }

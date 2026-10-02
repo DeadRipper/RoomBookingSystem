@@ -1,6 +1,6 @@
 import { useMemo, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
-import { rooms } from "../data/rooms";
+import { useRooms } from "../store/RoomsContext";
 import { useBookings } from "../store/BookingsContext";
 import { buildDaySlots, formatDateLabel, formatMinutes, isoDate } from "../lib/time";
 
@@ -9,6 +9,7 @@ export default function RoomDetailPage() {
   const navigate = useNavigate();
   const { bookings, addBooking, isSlotFree, currentUser } = useBookings();
 
+  const { rooms } = useRooms();
   const room = rooms.find((r) => r.id === Number(roomId));
 
   const [dayOffset, setDayOffset] = useState(0);
