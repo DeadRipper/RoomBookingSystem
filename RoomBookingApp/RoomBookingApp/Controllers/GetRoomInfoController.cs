@@ -14,5 +14,8 @@ namespace RoomBookingApp.Controllers
         {
             return Ok(await _roomManagment.GetAllRooms() ?? "no rooms");
         }
+
+        //[HttpPost("roomInfo")]
+        //public async Task<IActionResult> 
     }
 }
