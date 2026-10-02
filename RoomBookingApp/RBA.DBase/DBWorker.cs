@@ -94,18 +94,18 @@ namespace RBA.DBase
 
         public async Task<bool> LoginAsync(LoginRequest request)
         {
-            var isUserExists = await appDbContext.Admins.AnyAsync(x => x.Id == request.Id);
+            var isUserExists = await appDbContext.Admins.AnyAsync(x => x.AdminInfo.Username == request.UserName);
             if (!isUserExists)
             {
-                logger.LogWarning($"Login attempt failed for Admin ID: {request.Id}");
+                logger.LogWarning($"Login attempt failed for Admin Username: {request.UserName}");
                 return false;
             }
 
-            var passCheck = await appDbContext.Admins.Where(x => x.Id == request.Id && x.AdminInfo.Password == request.Password).FirstOrDefaultAsync();
+            var passCheck = await appDbContext.Admins.Where(x => x.AdminInfo.Username == request.UserName && x.AdminInfo.Password == request.Password).FirstOrDefaultAsync();
 
             if (passCheck == null)
             {
-                logger.LogWarning($"Login attempt failed for Admin ID: {request.Id}");
+                logger.LogWarning($"Login attempt failed for Admin Username: {request.UserName}");
                 return false;
             }
 

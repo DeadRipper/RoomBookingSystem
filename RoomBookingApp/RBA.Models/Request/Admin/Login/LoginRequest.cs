@@ -6,7 +6,7 @@ namespace RBA.Models.Request.Admin.Login
 {
     public class LoginRequest : RequestBase
     {
-        public int Id { get; set; }
+        public string UserName { get; set; }
         public string Password { get; set; }
     }
 }
