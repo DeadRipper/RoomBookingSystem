@@ -12,11 +12,8 @@ namespace RoomBookingApp.Controllers
         [HttpPost("login")]
         public async Task<IActionResult> Login([FromBody] LoginRequest request)
         {
-            var result = await _adminManagment.LoginAsync(request);
-            if (!result)
-            {
+            if (!await _adminManagment.LoginAsync(request))
                 return Unauthorized();
-            }
             return Ok();
         }
     }
