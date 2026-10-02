@@ -1,4 +1,4 @@
-﻿using RBA.Models.Request.ChangeBookingSettings;
+﻿using RBA.Models.Request.RoomBooking.ChangeBookingSettings;
 using RBA.Models.States;
 using System;
 using System.Collections.Generic;

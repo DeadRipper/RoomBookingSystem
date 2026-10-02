@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Text;
 using System.Text.Json.Serialization;
 
-namespace RBA.Models.Request.BookRoom
+namespace RBA.Models.Request.RoomBooking.BookRoom
 {
     public class BookRoomResponse : ResponseBase
     {

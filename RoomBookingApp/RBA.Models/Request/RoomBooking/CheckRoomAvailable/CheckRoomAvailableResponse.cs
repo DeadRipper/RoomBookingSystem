@@ -3,7 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace RBA.Models.Request.CheckRoomAvailable
+namespace RBA.Models.Request.RoomBooking.CheckRoomAvailable
 {
     public class CheckRoomAvailableResponse : ResponseBase
     {

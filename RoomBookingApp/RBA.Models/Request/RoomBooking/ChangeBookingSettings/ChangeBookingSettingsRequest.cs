@@ -1,9 +1,9 @@
-﻿using RBA.Models.Models;
+﻿using RBA.Models.Models.RoomBookingModels;
 using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace RBA.Models.Request.ChangeBookingSettings
+namespace RBA.Models.Request.RoomBooking.ChangeBookingSettings
 {
     public class ChangeBookingSettingsRequest : RequestBase
     {

@@ -1,4 +1,4 @@
-﻿using RBA.Models.Request.ChangeBookingSettings;
+﻿using RBA.Models.Request.RoomBooking.ChangeBookingSettings;
 using RBA.Models.States;
 
 namespace RBA.CacheBookings

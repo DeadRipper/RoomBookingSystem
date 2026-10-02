@@ -3,7 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace RBA.Models.Models
+namespace RBA.Models.Models.RoomBookingModels
 {
     public class RoomModel
     {

@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace RBA.Models.Request.UnbookRoom
+namespace RBA.Models.Request.RoomBooking.UnbookRoom
 {
     public class UnbookRoomRequest : RequestBase
     {

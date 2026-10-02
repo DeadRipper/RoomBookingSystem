@@ -2,14 +2,15 @@
 using Microsoft.Extensions.Logging;
 using RBA.DBase.DBRelations;
 using RBA.DBase.Managers;
-using RBA.Models.Models;
-using RBA.Models.Request.BookRoom;
-using RBA.Models.Request.ChangeBookingSettings;
-using RBA.Models.Request.CheckRoomAvailable;
-using RBA.Models.Request.UnbookRoom;
+using RBA.Models.Models.RoomBookingModels;
+using RBA.Models.Request.Admin.Login;
+using RBA.Models.Request.RoomBooking.BookRoom;
+using RBA.Models.Request.RoomBooking.CheckRoomAvailable;
+using RBA.Models.Request.RoomBooking.UnbookRoom;
 using RBA.Models.States;
 using System;
 using System.Collections.Generic;
+using System.Runtime.Serialization.Formatters;
 using System.Text;
 
 namespace RBA.DBase
@@ -89,6 +90,26 @@ namespace RBA.DBase
         public async Task<IEnumerable<RoomModel>> GetAllRooms()
         {
             return await appDbContext.Rooms.Where(x => x.Id != 0).ToListAsync();
+        }
+
+        public async Task<bool> LoginAsync(LoginRequest request)
+        {
+            var isUserExists = await appDbContext.Admins.AnyAsync(x => x.Id == request.Id);
+            if (!isUserExists)
+            {
+                logger.LogWarning($"Login attempt failed for Admin ID: {request.Id}");
+                return false;
+            }
+
+            var passCheck = await appDbContext.Admins.Where(x => x.Id == request.Id && x.AdminInfo.Password == request.Password).FirstOrDefaultAsync();
+
+            if (passCheck == null)
+            {
+                logger.LogWarning($"Login attempt failed for Admin ID: {request.Id}");
+                return false;
+            }
+
+            return true;
         }
     }
 }
