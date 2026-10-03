@@ -23,39 +23,56 @@ namespace RoomBookingApp.Controllers
         [HttpPost("bookRoom")]
         public async Task<IActionResult> BookRoom([FromBody] BookRoomRequest request)
         {
-            return Ok(JsonBuildHelper.BuildJsonResponse(new BookRoomResponse
+            return Ok(new BookRoomResponse
             {
                 RequestId = request.RequestId,
                 RoomId = request.RoomId,
                 BookState = await _roomManagment.BookRoom(request)
-            }));
+            });
+            //return Ok(JsonBuildHelper.BuildJsonResponse(new BookRoomResponse
+            //{
+            //    RequestId = request.RequestId,
+            //    RoomId = request.RoomId,
+            //    BookState = await _roomManagment.BookRoom(request)
+            //}));
         }
 
         [HttpPost("unbookRoom")]
         public async Task<IActionResult> UnbookRoom([FromBody] UnbookRoomRequest request)
         {
-            return Ok(JsonBuildHelper.BuildJsonResponse(new UnbookRoomResponse
+            return Ok(new UnbookRoomResponse
             {
                 RequestId = request.RequestId,
                 RoomId = request.RoomId,
                 BookState = await _roomManagment.UnbookRoom(request)
-            }));
+            });
+            //return Ok(JsonBuildHelper.BuildJsonResponse(new UnbookRoomResponse
+            //{
+            //    RequestId = request.RequestId,
+            //    RoomId = request.RoomId,
+            //    BookState = await _roomManagment.UnbookRoom(request)
+            //}));
         }
 
         [HttpPost("changeBookingSettings")]
         public async Task<IActionResult> ChangeBookingSettings([FromBody] ChangeBookingSettingsRequest request)
         {
-            return Ok(await _roomManagment.ChangeBookingSettings(request));
+            return Ok(_roomManagment.ChangeBookingSettings(request));
         }
 
         [HttpPost("checkAvailable")]
         public async Task<IActionResult> CheckAvailable([FromBody] CheckRoomAvailableRequest request)
         {
-            return Ok(JsonBuildHelper.BuildJsonResponse(new CheckRoomAvailableResponse
+            //return Ok(JsonBuildHelper.BuildJsonResponse(new CheckRoomAvailableResponse
+            //{
+            //    RequestId = request.RequestId,
+            //    roomState = await _roomManagment.CheckIfRoomIsAvailable(request)
+            //}));
+            return Ok(new CheckRoomAvailableResponse
             {
                 RequestId = request.RequestId,
                 roomState = await _roomManagment.CheckIfRoomIsAvailable(request)
-            }));
+            });
         }
     }
 }

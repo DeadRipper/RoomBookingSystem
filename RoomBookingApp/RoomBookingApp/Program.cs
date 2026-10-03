@@ -1,10 +1,11 @@
 
+using Microsoft.AspNetCore.HttpLogging;
+using Microsoft.EntityFrameworkCore;
+using RBA.CacheBookings;
 using RBA.DBase;
 using RBA.DBase.DBRelations;
 using RBA.DBase.Managers;
-using Microsoft.EntityFrameworkCore;
 using RoomBookingApp.Middlewares;
-using RBA.CacheBookings;
 
 namespace RoomBookingApp
 {
@@ -32,7 +33,14 @@ namespace RoomBookingApp
             builder.Services.AddSingleton<ICacheWorker, CBWorker>();
             builder.Services.AddScoped<IAdminManagment, AdminWorker>();
 
+            builder.Services.AddHttpLogging(logging =>
+            {
+                logging.LoggingFields = HttpLoggingFields.Request | HttpLoggingFields.Response;
+            });
+
             var app = builder.Build();
+            
+            app.UseHttpLogging();
 
             using (var scope = app.Services.CreateScope())
             {
