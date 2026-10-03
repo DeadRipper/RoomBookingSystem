@@ -120,17 +120,20 @@ namespace RBA.DBase
                 }
             };
 
+            appDbContext.Admins.Where(x => x.AdminInfo.Username == request.UserName)?.FirstOrDefault()?.AdminInfo = currentAdminLogIn.AdminInfo;
+            await appDbContext.SaveChangesAsync();
+
             return true;
         }
 
-        public async Task LogoutAsync(LogoutRequest request)
+        public async Task<bool> LogoutAsync(LogoutRequest request)
         {
             var findCurrentAdmin = appDbContext.Admins.FirstOrDefault(x => x.AdminInfo.Username == request.UserName);
 
             if(findCurrentAdmin == null)
             {
                 logger.LogWarning($"Logout attempt failed for Admin Username: {request.UserName}");
-                return;
+                return false;
             }
 
             var currentAdminLogOut = new AdminModel
@@ -142,8 +145,10 @@ namespace RBA.DBase
                 }
             };
 
-            appDbContext.Admins.Add(currentAdminLogOut);
+            appDbContext.Admins.Where(x => x.AdminInfo.Username == request.UserName)?.FirstOrDefault()?.AdminInfo = currentAdminLogOut.AdminInfo;
             await appDbContext.SaveChangesAsync();
+
+            return true;
         }
     }
 }

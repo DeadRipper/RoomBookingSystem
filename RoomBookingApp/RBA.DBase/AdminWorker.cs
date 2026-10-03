@@ -14,7 +14,7 @@ namespace RBA.DBase
             return dbWorker.LoginAsync(request);
         }
 
-        public Task LogoutAsync(LogoutRequest request)
+        public Task<bool> LogoutAsync(LogoutRequest request)
         {
             return dbWorker.LogoutAsync(request);
         }

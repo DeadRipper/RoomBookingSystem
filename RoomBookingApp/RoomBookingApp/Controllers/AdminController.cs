@@ -21,7 +21,8 @@ namespace RoomBookingApp.Controllers
         [HttpPost("logout")]
         public async Task<IActionResult> Logout([FromBody] LogoutRequest request)
         {
-            _adminManagment.LogoutAsync(request);
+            if (!await _adminManagment.LogoutAsync(request))
+                return BadRequest();
             return Ok();
         }
     }

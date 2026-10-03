@@ -21,6 +21,6 @@ namespace RBA.DBase.Managers
 
         //----------------------- Admin Management -----------------------
         Task<bool> LoginAsync(LoginRequest request);
-        Task LogoutAsync(LogoutRequest request);
+        Task<bool> LogoutAsync(LogoutRequest request);
     }
 }
