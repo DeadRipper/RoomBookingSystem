@@ -63,10 +63,7 @@ namespace RBA.DBase
             {
                 RoomId = bookRoomRequest.RoomId,
                 Date = bookRoomRequest.BookingDate,
-                Users = new UserModel()
-                {
-                    UserName = bookRoomRequest.UserName
-                },
+                Users = appDbContext.Users.Where(x => x.Id == bookRoomRequest.UserId).FirstOrDefault(),
                 Room = appDbContext.Rooms.Where(x => x.Id == bookRoomRequest.RoomId).FirstOrDefault(),
                 MeetingTitle = bookRoomRequest.MeetingTitle
             };
