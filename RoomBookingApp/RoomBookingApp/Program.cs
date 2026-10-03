@@ -45,14 +45,12 @@ namespace RoomBookingApp
                 app.MapOpenApi();
             }
 
-            app.UseHttpsRedirection();
-            app.UseMiddleware<LogRequestMiddleware>();
-            
+            app.UseHttpsRedirection();            
 
             app.UseAuthorization();
 
             app.MapControllers();
-            //app.UseMiddleware<LogResponseMiddleware>();
+
             app.Run();
         }
     }

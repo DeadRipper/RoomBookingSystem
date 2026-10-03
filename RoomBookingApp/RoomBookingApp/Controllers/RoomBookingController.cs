@@ -14,6 +14,12 @@ namespace RoomBookingApp.Controllers
     [ApiController]
     public class RoomBookingController(IRoomManagment _roomManagment) : ControllerBase
     {
+        [HttpPost("getAllrooms")]
+        public async Task<IActionResult> RoomInfo()
+        {
+            return Ok(await _roomManagment.GetAllRooms() ?? "no rooms");
+        }
+
         [HttpPost("bookRoom")]
         public async Task<IActionResult> BookRoom([FromBody] BookRoomRequest request)
         {

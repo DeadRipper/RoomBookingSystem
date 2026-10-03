@@ -10,6 +10,9 @@ namespace RBA.Models.Models.AdminModels
         public string Username { get; set; }
         public string Password { get; set; }
         public string Email { get; set; }
+        public DateTime LoginDate { get; set; }
+        public DateTime LogoutDate { get; set; }
         public List<string> Roles { get; set; }
+        public int CurrentlyIn { get; set; }
     }
 }

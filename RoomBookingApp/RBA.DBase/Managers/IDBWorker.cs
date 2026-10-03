@@ -1,5 +1,6 @@
 ﻿using RBA.Models.Models.RoomBookingModels;
 using RBA.Models.Request.Admin.Login;
+using RBA.Models.Request.Admin.Logout;
 using RBA.Models.Request.RoomBooking.BookRoom;
 using RBA.Models.Request.RoomBooking.CheckRoomAvailable;
 using RBA.Models.Request.RoomBooking.UnbookRoom;
@@ -20,5 +21,6 @@ namespace RBA.DBase.Managers
 
         //----------------------- Admin Management -----------------------
         Task<bool> LoginAsync(LoginRequest request);
+        Task LogoutAsync(LogoutRequest request);
     }
 }

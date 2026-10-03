@@ -2,8 +2,10 @@
 using Microsoft.Extensions.Logging;
 using RBA.DBase.DBRelations;
 using RBA.DBase.Managers;
+using RBA.Models.Models.AdminModels;
 using RBA.Models.Models.RoomBookingModels;
 using RBA.Models.Request.Admin.Login;
+using RBA.Models.Request.Admin.Logout;
 using RBA.Models.Request.RoomBooking.BookRoom;
 using RBA.Models.Request.RoomBooking.CheckRoomAvailable;
 using RBA.Models.Request.RoomBooking.UnbookRoom;
@@ -109,7 +111,39 @@ namespace RBA.DBase
                 return false;
             }
 
+            var currentAdminLogIn = new AdminModel
+            {
+                AdminInfo = new AdminInfo
+                {
+                    CurrentlyIn = 1,
+                    LoginDate = DateTime.Now,
+                }
+            };
+
             return true;
+        }
+
+        public async Task LogoutAsync(LogoutRequest request)
+        {
+            var findCurrentAdmin = appDbContext.Admins.FirstOrDefault(x => x.AdminInfo.Username == request.UserName);
+
+            if(findCurrentAdmin == null)
+            {
+                logger.LogWarning($"Logout attempt failed for Admin Username: {request.UserName}");
+                return;
+            }
+
+            var currentAdminLogOut = new AdminModel
+            {
+                AdminInfo = new AdminInfo
+                {
+                    CurrentlyIn = 0,
+                    LogoutDate = DateTime.Now,
+                }
+            };
+
+            appDbContext.Admins.Add(currentAdminLogOut);
+            await appDbContext.SaveChangesAsync();
         }
     }
 }

@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using RBA.DBase.Managers;
 using RBA.Models.Request.Admin.Login;
+using RBA.Models.Request.Admin.Logout;
 
 namespace RoomBookingApp.Controllers
 {
@@ -14,6 +15,13 @@ namespace RoomBookingApp.Controllers
         {
             if (!await _adminManagment.LoginAsync(request))
                 return Unauthorized();
+            return Ok();
+        }
+
+        [HttpPost("logout")]
+        public async Task<IActionResult> Logout([FromBody] LogoutRequest request)
+        {
+            _adminManagment.LogoutAsync(request);
             return Ok();
         }
     }
