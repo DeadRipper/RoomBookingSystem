@@ -2,6 +2,7 @@
 using RBA.Models.Request.Admin.Login;
 using RBA.Models.Request.Admin.Logout;
 using RBA.Models.Request.Admin.NewRoom;
+using RBA.Models.Request.Admin.Reservations;
 using RBA.Models.Request.RoomBooking.BookRoom;
 using RBA.Models.Request.RoomBooking.CheckRoomAvailable;
 using RBA.Models.Request.RoomBooking.UnbookRoom;
@@ -28,6 +29,6 @@ namespace RBA.DBase.Managers
         Task<int> GetTotalBookings();
         Task<int> GetAllRoomsCount();
         Task<int> GetTodayBookings();
-        Task<List<ReservationModel>> GetAllReservations();
+        Task<List<ReservationDTO>> GetAllReservations();
     }
 }

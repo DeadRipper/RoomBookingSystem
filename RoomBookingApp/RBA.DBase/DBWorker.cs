@@ -7,6 +7,7 @@ using RBA.Models.Models.RoomBookingModels;
 using RBA.Models.Request.Admin.Login;
 using RBA.Models.Request.Admin.Logout;
 using RBA.Models.Request.Admin.NewRoom;
+using RBA.Models.Request.Admin.Reservations;
 using RBA.Models.Request.RoomBooking.BookRoom;
 using RBA.Models.Request.RoomBooking.CheckRoomAvailable;
 using RBA.Models.Request.RoomBooking.UnbookRoom;
@@ -180,9 +181,25 @@ namespace RBA.DBase
             return await appDbContext.Rooms.CountAsync();
         }
 
-        public async Task<List<ReservationModel>> GetAllReservations()
+        public async Task<List<ReservationDTO>> GetAllReservations()
         {
-            return await appDbContext.Reservations.ToListAsync();
+            var currentReservations = await appDbContext.Reservations.ToListAsync();
+
+            var resList = new List<ReservationDTO>();
+            foreach (var reservation in currentReservations)
+            {
+                if (reservation?.Room != null && reservation?.Users != null)
+                {
+                    resList.Add(new ReservationDTO
+                    {
+                        Date = reservation.Date,
+                        RoomName = reservation.Room.Name,
+                        UserName = reservation.Users.UserName
+                    });
+                }
+            }
+
+            return resList;
         }
     }
 }

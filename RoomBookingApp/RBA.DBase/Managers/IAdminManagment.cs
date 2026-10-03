@@ -2,6 +2,7 @@
 using RBA.Models.Request.Admin.Login;
 using RBA.Models.Request.Admin.Logout;
 using RBA.Models.Request.Admin.NewRoom;
+using RBA.Models.Request.Admin.Reservations;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -17,6 +18,6 @@ namespace RBA.DBase.Managers
         Task<int> GetTotalBookings();
         Task<int> GetAllRoomsCount();
         Task<int> GetTodayBookings();
-        Task<List<ReservationModel>> GetAllReservations();
+        Task<List<ReservationDTO>> GetAllReservations();
     }
 }

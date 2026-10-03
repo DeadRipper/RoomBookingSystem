@@ -3,6 +3,7 @@ using RBA.Models.Models.RoomBookingModels;
 using RBA.Models.Request.Admin.Login;
 using RBA.Models.Request.Admin.Logout;
 using RBA.Models.Request.Admin.NewRoom;
+using RBA.Models.Request.Admin.Reservations;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -46,7 +47,7 @@ namespace RBA.DBase
             return dbWorker.GetAllRoomsCount();
         }
 
-        public Task<List<ReservationModel>> GetAllReservations()
+        public Task<List<ReservationDTO>> GetAllReservations()
         {
             return dbWorker.GetAllReservations();
         }
