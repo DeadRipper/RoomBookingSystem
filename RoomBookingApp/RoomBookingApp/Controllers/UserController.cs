@@ -22,6 +22,12 @@ namespace RoomBookingApp.Controllers
             return Ok(await userManagment.GetAllUsersId());
         }
 
+        [HttpPost("getUserById")]
+        public async Task<IActionResult> GetUserById([FromBody] GetUserIdRequest request)
+        {
+            return Ok(await userManagment.GetUserId(request));
+        }
+
         [HttpPost("registrate")]
         public async Task<IActionResult> RegistrateUser([FromBody] RegistrationRequest request)
         {

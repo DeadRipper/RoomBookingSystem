@@ -1,4 +1,6 @@
 ﻿using RBA.DBase.Managers;
+using RBA.Models.Models.RoomBookingModels;
+using RBA.Models.Request.User.GetUserById;
 using RBA.Models.Request.User.GetUserId;
 using RBA.Models.Request.User.Registration;
 using System;
@@ -25,6 +27,11 @@ namespace RBA.DBase
         {
             var userIds = await dBWorker.GetAllUsersId();
             return userIds;
+        }
+
+        public Task<UserModel> GetUserById(GetUserByIdRequest request)
+        {
+            return dBWorker.GetUserById(request);
         }
     }
 }

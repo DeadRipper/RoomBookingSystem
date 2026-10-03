@@ -11,6 +11,7 @@ using RBA.Models.Request.Admin.Reservations;
 using RBA.Models.Request.RoomBooking.BookRoom;
 using RBA.Models.Request.RoomBooking.CheckRoomAvailable;
 using RBA.Models.Request.RoomBooking.UnbookRoom;
+using RBA.Models.Request.User.GetUserById;
 using RBA.Models.Request.User.GetUserId;
 using RBA.Models.Request.User.Registration;
 using RBA.Models.States;
@@ -69,12 +70,10 @@ namespace RBA.DBase
             {
                 RoomId = bookRoomRequest.RoomId,
                 Date = bookRoomRequest.BookingDate,
-                Users = appDbContext.Users.Where(x => x.Id == bookRoomRequest.UserId).FirstOrDefault(),
-                Room = appDbContext.Rooms.Where(x => x.Id == bookRoomRequest.RoomId).FirstOrDefault(),
+                UserId = bookRoomRequest.UserId,
                 MeetingTitle = bookRoomRequest.MeetingTitle
             };
             appDbContext.Reservations.Add(reservation);
-            appDbContext.Entry(reservation).Property("UsersId").CurrentValue = bookRoomRequest.UserId;
 
             await appDbContext.SaveChangesAsync();
             return BookState.Confirmed;
@@ -165,7 +164,7 @@ namespace RBA.DBase
                 Amenities = await appDbContext.Amenities.FirstOrDefaultAsync(x => x.Id == request.Amenities.Id) ?? new AmenityModel(),
                 Image = request.Image,
                 RoomState = RoomState.Available,
-                Reservations = new List<ReservationModel>()
+                ReservationsId = new List<int>()
             };
             appDbContext.Rooms.Add(newRoom);
             await appDbContext.SaveChangesAsync();
@@ -192,26 +191,9 @@ namespace RBA.DBase
             return await appDbContext.Rooms.CountAsync();
         }
 
-        public async Task<List<ReservationDTO>> GetAllReservations()
+        public async Task<List<ReservationModel>> GetAllReservations()
         {
-            var currentReservations = await appDbContext.Reservations.ToListAsync();
-
-            var resList = new List<ReservationDTO>();
-            foreach (var reservation in currentReservations)
-            {
-                if (reservation?.Room != null && reservation?.Users != null)
-                {
-                    resList.Add(new ReservationDTO
-                    {
-                        Date = reservation.Date,
-                        RoomName = reservation.Room.Name,
-                        UserName = reservation.Users.UserName,
-                        MeetingTitle = reservation.MeetingTitle
-                    });
-                }
-            }
-
-            return resList;
+            return await appDbContext.Reservations.ToListAsync();
         }
 
         public async Task<bool> AddUserAsync(RegistrationRequest request)
@@ -235,6 +217,11 @@ namespace RBA.DBase
         public async Task<List<int>> GetAllUsersId()
         {
             return await appDbContext.Users.Select(u => u.Id).ToListAsync();
+        }
+
+        public async Task<UserModel> GetUserById(GetUserByIdRequest request)
+        {
+            return await appDbContext.Users.FirstOrDefaultAsync(u => u.Id == request.UserId);
         }
     }
 }
