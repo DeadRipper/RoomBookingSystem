@@ -43,6 +43,12 @@ namespace RBA.DBase
 
         public async Task<BookState> BookingRoom(BookRoomRequest bookRoomRequest)
         {
+            if (appDbContext.Users.FirstOrDefault(x => x.Id == bookRoomRequest.UserId) == null)
+            {
+                logger.LogError($"User with ID: {bookRoomRequest.UserId} not found while booking room for Room ID: {bookRoomRequest.RoomId}");
+                return BookState.Failed;
+            }
+
             try
             {
                 var roomSearch = appDbContext.Rooms.Where(x => x.Id == bookRoomRequest.RoomId);
