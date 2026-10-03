@@ -201,7 +201,8 @@ namespace RBA.DBase
                     {
                         Date = reservation.Date,
                         RoomName = reservation.Room.Name,
-                        UserName = reservation.Users.UserName
+                        UserName = reservation.Users.UserName,
+                        MeetingTitle = reservation.MeetingTitle
                     });
                 }
             }

@@ -9,5 +9,6 @@ namespace RBA.Models.Request.Admin.Reservations
         public DateTime Date { get; set; }
         public string RoomName { get; set; }
         public string UserName { get; set; }
+        public string MeetingTitle { get; set; }
     }
 }
