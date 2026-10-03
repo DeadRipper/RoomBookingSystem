@@ -96,14 +96,14 @@ namespace RBA.DBase
 
         public async Task<bool> LoginAsync(LoginRequest request)
         {
-            var isUserExists = await appDbContext.Admins.AnyAsync(x => x.AdminInfo.Username == request.UserName);
+            var isUserExists = await appDbContext.AdminInfo.AnyAsync(x => x.Username == request.UserName);
             if (!isUserExists)
             {
                 logger.LogWarning($"Login attempt failed for Admin Username: {request.UserName}");
                 return false;
             }
 
-            var passCheck = await appDbContext.Admins.Where(x => x.AdminInfo.Username == request.UserName && x.AdminInfo.Password == request.Password).FirstOrDefaultAsync();
+            var passCheck = await appDbContext.AdminInfo.Where(x => x.Username == request.UserName && x.Password == request.Password).FirstOrDefaultAsync();
 
             if (passCheck == null)
             {
@@ -111,22 +111,12 @@ namespace RBA.DBase
                 return false;
             }
 
-            var getAdminData = await appDbContext.Admins.Where(x => x.AdminInfo.Username == request.UserName && x.AdminInfo.Password == request.Password).Select(xx => xx.AdminInfo).FirstOrDefaultAsync();
+            var info = await appDbContext.AdminInfo
+                .FirstAsync(x => x.Username == request.UserName && x.Password == request.Password);
+            info.CurrentlyIn = 1;
+            info.LoginDate = DateTime.Now;
 
-            var currentAdminLogIn = new AdminModel
-            {
-                AdminInfo = new AdminInfo
-                {
-                    Username = request.UserName,
-                    Password = request.Password,
-                    Email = getAdminData.Email,
-                    Roles = getAdminData.Roles,
-                    CurrentlyIn = 1,
-                    LoginDate = DateTime.Now
-                }
-            };
-
-            appDbContext.Admins.Where(x => x.AdminInfo.Username == request.UserName)?.FirstOrDefault()?.AdminInfo = currentAdminLogIn.AdminInfo;
+            appDbContext.Admins.Where(x => x.AdminInfo.Username == request.UserName)?.FirstOrDefault()?.AdminInfo = info;
             await appDbContext.SaveChangesAsync();
 
             return true;
@@ -134,7 +124,7 @@ namespace RBA.DBase
 
         public async Task<bool> LogoutAsync(LogoutRequest request)
         {
-            var findCurrentAdmin = appDbContext.Admins.FirstOrDefault(x => x.AdminInfo.Username == request.UserName);
+            var findCurrentAdmin = appDbContext.AdminInfo.FirstOrDefault(x => x.Username == request.UserName);
 
             if(findCurrentAdmin == null)
             {
@@ -142,28 +132,11 @@ namespace RBA.DBase
                 return false;
             }
 
-            findCurrentAdmin.AdminInfo = await appDbContext?.Admins?.Where(x => x.AdminInfo != null && x.AdminInfo.Username == request.UserName)?.Select(xx => xx.AdminInfo)?.FirstOrDefaultAsync() ?? null;
+            var info = await appDbContext.AdminInfo.FirstAsync(x => x.Username == request.UserName);
+            info.CurrentlyIn = 0;
+            info.LogoutDate = DateTime.Now;
 
-            if (findCurrentAdmin.AdminInfo == null)
-            {
-                logger.LogWarning($"Logout attempt failed for Admin Username: {request.UserName}");
-                return false;
-            }
-
-            var currentAdminLogOut = new AdminModel
-            {
-                AdminInfo = new AdminInfo
-                {
-                    Username = request.UserName,
-                    Password = findCurrentAdmin.AdminInfo.Password,
-                    Email = findCurrentAdmin.AdminInfo.Email,
-                    Roles = findCurrentAdmin.AdminInfo.Roles,
-                    CurrentlyIn = 0,
-                    LogoutDate = DateTime.Now,
-                }
-            };
-
-            appDbContext.Admins.Where(x => x.AdminInfo.Username == request.UserName)?.FirstOrDefault()?.AdminInfo = currentAdminLogOut.AdminInfo;
+            appDbContext.Admins.Where(x => x.AdminInfo.Username == request.UserName)?.FirstOrDefault()?.AdminInfo = info;
             await appDbContext.SaveChangesAsync();
 
             return true;

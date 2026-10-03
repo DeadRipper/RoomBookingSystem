@@ -14,6 +14,7 @@ namespace RBA.DBase.DBRelations
         public DbSet<ReservationModel> Reservations => Set<ReservationModel>();
         public DbSet<AmenityModel> Amenities => Set<AmenityModel>();
         public DbSet<AdminModel> Admins => Set<AdminModel>();
+        public DbSet<AdminInfo> AdminInfo => Set<AdminInfo>();
 
         public AppDbContext(DbContextOptions<AppDbContext> options) : base(options)
         {
