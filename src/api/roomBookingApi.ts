@@ -38,11 +38,6 @@ function safeParse(text: string): unknown {
 // Thin client for the ASP.NET backend (RoomBookingApp.Controllers.RoomBookingController).
 // BookRoomRequest now carries BookingDate and MeetingTitle alongside RoomId — see
 // BookingsContext.addBooking for how the local booking model maps onto this request.
-//
-// UserId is hardcoded to 1 below: the backend added a required UsersId FK on
-// Reservations, but there's no user lookup/auth in the app yet, so we can't
-// resolve the "Booking as" name to a real DB user id. Revisit once a Users
-// endpoint exists.
 
 const BOOK_ROOM_URL = "/api/RoomBooking/bookRoom";
 const UNBOOK_ROOM_URL = "/api/RoomBooking/unbookRoom";
@@ -63,9 +58,6 @@ export interface BookRoomParams {
   userName: string;
 }
 
-// See the module-level comment above: there's no user lookup yet, so every
-// booking is attributed to this fixed backend user id.
-const HARDCODED_USER_ID = 1;
 
 // Mirrors RBA.Models.States.BookState. System.Text.Json serializes enums as
 // their numeric value by default (no JsonStringEnumConverter is registered).
@@ -117,6 +109,7 @@ export async function bookRoomOnServer({
   meetingTitle,
   userName,
 }: BookRoomParams): Promise<void> {
+  const userId = await requireUserId(userName);
   let response: Response;
   try {
     response = await loggedFetch(BOOK_ROOM_URL, {
@@ -126,7 +119,7 @@ export async function bookRoomOnServer({
         roomId,
         bookingDate,
         meetingTitle,
-        userId: HARDCODED_USER_ID,
+        userId,
         userName,
       }),
     });
@@ -209,6 +202,7 @@ export async function changeBookingOnServer({
   bookingDate,
   userName,
 }: ChangeBookingParams): Promise<void> {
+  const userId = await requireUserId(userName);
   let response: Response;
   try {
     response = await loggedFetch(CHANGE_BOOKING_URL, {
@@ -217,7 +211,7 @@ export async function changeBookingOnServer({
       body: JSON.stringify({
         roomId,
         date: bookingDate,
-        users: { id: HARDCODED_USER_ID, userName },
+        users: { id: userId, userName },
       }),
     });
   } catch (cause) {
@@ -455,17 +449,18 @@ export const fetchTodayBookings = () => fetchCount("/api/Admin/getTodayBookings"
 export const fetchRoomsCount = () => fetchCount("/api/Admin/getAllRoomsCount", "rooms");
 
 // --- All reservations (AdminController.getAllReservations) ----------------
-// GET. Replies Ok(List<ReservationModel>) as camelCase JSON. The query has no
-// Include(), so `users` and `room` are null and the user FK isn't serialized:
-// only id, date and roomId are usable until the backend loads the relations.
+// GET. Replies Ok(List<ReservationDTO>) as camelCase JSON:
+// { date, roomName, userName, meetingTitle }.
+// The DTO carries no reservation or room id, and the backend only includes rows
+// whose Room and Users relations are loaded.
 
 const ALL_RESERVATIONS_URL = "/api/Admin/getAllReservations";
 
 export interface ServerReservation {
-  id: number;
   date: string; // ISO 8601 datetime
-  roomId: number;
-  userName: string | null; // null while the backend doesn't include Users
+  roomName: string;
+  userName: string;
+  meetingTitle: string;
 }
 
 export async function fetchAllReservations(): Promise<ServerReservation[]> {
@@ -481,15 +476,95 @@ export async function fetchAllReservations(): Promise<ServerReservation[]> {
 
   const body: unknown = await response.json().catch(() => []);
   if (!Array.isArray(body)) return [];
-  return (body as Array<{
-    id?: number;
-    date?: string;
-    roomId?: number;
-    users?: { userName?: string } | null;
-  }>).map((r) => ({
-    id: r.id ?? 0,
+  return (body as Array<Partial<ServerReservation>>).map((r) => ({
     date: r.date ?? "",
-    roomId: r.roomId ?? 0,
-    userName: r.users?.userName ?? null,
+    roomName: r.roomName ?? "",
+    userName: r.userName ?? "",
+    meetingTitle: r.meetingTitle ?? "",
   }));
+}
+
+// --- User registration (UserController.registrate) ------------------------
+// POST { userName, password, email }. Replies Ok(bool). It still returns no user
+// id - look it up afterwards with getUserId - and nothing stops duplicate
+// usernames.
+
+const REGISTER_URL = "/api/User/registrate";
+
+export interface RegisterUserParams {
+  userName: string;
+  password: string;
+  email: string;
+}
+
+export async function registerUser({ userName, password, email }: RegisterUserParams): Promise<void> {
+  let response: Response;
+  try {
+    response = await loggedFetch(REGISTER_URL, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ userName, password, email }),
+    });
+  } catch (cause) {
+    throw new RoomBookingApiError("Could not reach the booking server.", { cause });
+  }
+  if (!response.ok) {
+    const errorText = await response.text().catch(() => "");
+    throw new RoomBookingApiError(`Registration failed (${response.status}): ${errorText}`);
+  }
+  if ((await response.json().catch(() => true)) === false) {
+    throw new RoomBookingApiError("The server did not register this user.");
+  }
+}
+
+// --- User ids (UserController.getUserId / getAllUsersId) ------------------
+// getUserId: POST { userName } -> Ok(int), the user's id or 0 when no such
+// user is registered. getAllUsersId: GET -> Ok(int[]).
+
+const GET_USER_ID_URL = "/api/User/getUserId";
+const ALL_USER_IDS_URL = "/api/User/getAllUsersId";
+
+export async function fetchUserId(userName: string): Promise<number> {
+  let response: Response;
+  try {
+    response = await loggedFetch(GET_USER_ID_URL, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ userName }),
+    });
+  } catch (cause) {
+    throw new RoomBookingApiError("Could not reach the booking server.", { cause });
+  }
+  if (!response.ok) {
+    throw new RoomBookingApiError(`Booking server could not look up "${userName}" (${response.status}).`);
+  }
+  const id: unknown = await response.json().catch(() => null);
+  if (typeof id !== "number") {
+    throw new RoomBookingApiError("Booking server returned an unexpected user id.");
+  }
+  return id;
+}
+
+// Bookings must reference a real user: the id always comes from the backend.
+// 0 means the backend doesn't know the name, which is a refusal, not an outage.
+async function requireUserId(userName: string): Promise<number> {
+  const id = await fetchUserId(userName);
+  if (id <= 0) {
+    throw new RoomBookingFailedError(`"${userName}" is not a registered user. Register first.`);
+  }
+  return id;
+}
+
+export async function fetchAllUserIds(): Promise<number[]> {
+  let response: Response;
+  try {
+    response = await loggedFetch(ALL_USER_IDS_URL);
+  } catch (cause) {
+    throw new RoomBookingApiError("Could not reach the booking server.", { cause });
+  }
+  if (!response.ok) {
+    throw new RoomBookingApiError(`Booking server could not list users (${response.status}).`);
+  }
+  const ids: unknown = await response.json().catch(() => []);
+  return Array.isArray(ids) ? ids.filter((i): i is number => typeof i === "number") : [];
 }

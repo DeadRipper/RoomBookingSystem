@@ -104,6 +104,7 @@ exercised against it.
 | `POST /api/RoomBooking/getAllrooms` | `fetchRoomsFromServer` |
 | `POST /api/RoomBooking/bookRoom` / `unbookRoom` / `changeBookingSettings` | `bookRoomOnServer` / `unbookRoomOnServer` / `changeBookingOnServer` |
 | `POST /api/Admin/login` / `logout` | `adminLogin` / `adminLogout` |
+| `POST /api/User/registrate` / `getUserId`, `GET /api/User/getAllUsersId` | `registerUser` / `fetchUserId` (used by booking), `fetchAllUserIds` |
 | `POST /api/Admin/addRoom` | `addRoomOnServer` |
 | `GET /api/Admin/getRoomConfigs` | `fetchAmenitiesFromServer` |
 | `GET /api/Admin/getAllReservations` | `fetchAllReservations` |

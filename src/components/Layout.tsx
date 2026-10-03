@@ -33,6 +33,9 @@ export default function Layout() {
             <NavLink to="/bookings" className={navLinkClass}>
               My Bookings
             </NavLink>
+            <NavLink to="/register" className={navLinkClass}>
+              Register
+            </NavLink>
             <NavLink to={admin ? "/admin" : "/admin/login"} className={navLinkClass}>
               Admin
             </NavLink>
