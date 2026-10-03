@@ -11,6 +11,7 @@ using RBA.Models.Request.Admin.Reservations;
 using RBA.Models.Request.RoomBooking.BookRoom;
 using RBA.Models.Request.RoomBooking.CheckRoomAvailable;
 using RBA.Models.Request.RoomBooking.UnbookRoom;
+using RBA.Models.Request.User.GetUserId;
 using RBA.Models.Request.User.Registration;
 using RBA.Models.States;
 using System;
@@ -218,6 +219,17 @@ namespace RBA.DBase
             });
             await appDbContext.SaveChangesAsync();
             return true;
+        }
+
+        public async Task<int> GetUserId(GetUserIdRequest request)
+        {
+            var user = await appDbContext.Users.FirstOrDefaultAsync(u => u.UserName == request.UserName);
+            return user?.Id ?? 0;
+        }
+
+        public async Task<List<int>> GetAllUsersId()
+        {
+            return await appDbContext.Users.Select(u => u.Id).ToListAsync();
         }
     }
 }
