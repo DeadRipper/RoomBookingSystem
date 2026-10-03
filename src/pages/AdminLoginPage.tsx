@@ -1,10 +1,14 @@
 import { useState, type FormEvent } from "react";
 import { adminLogin } from "../api/roomBookingApi";
+import { useAdmin } from "../store/AdminContext";
+import { useNavigate } from "react-router-dom";
 
 export default function AdminLoginPage() {
-  const [id, setId] = useState("");
+  const navigate = useNavigate();
+  const { signIn } = useAdmin();
+  const [userName, setUserName] = useState("");
   const [password, setPassword] = useState("");
-  const [status, setStatus] = useState<"idle" | "busy" | "ok" | "denied">("idle");
+  const [status, setStatus] = useState<"idle" | "busy" | "denied">("idle");
   const [error, setError] = useState<string | null>(null);
 
   async function onSubmit(e: FormEvent) {
@@ -12,7 +16,13 @@ export default function AdminLoginPage() {
     setStatus("busy");
     setError(null);
     try {
-      setStatus((await adminLogin(Number(id), password)) ? "ok" : "denied");
+      const name = userName.trim();
+      if (await adminLogin(name, password)) {
+        signIn(name);
+        navigate("/admin", { replace: true });
+      } else {
+        setStatus("denied");
+      }
     } catch (err) {
       setStatus("idle");
       setError(err instanceof Error ? err.message : "Unexpected error.");
@@ -26,10 +36,9 @@ export default function AdminLoginPage() {
     <form onSubmit={onSubmit} className="mx-auto flex max-w-sm flex-col gap-4">
       <h1 className="text-2xl font-semibold tracking-tight text-slate-50">Admin login</h1>
       <input
-        value={id}
-        onChange={(e) => setId(e.target.value)}
-        inputMode="numeric"
-        placeholder="Admin ID"
+        value={userName}
+        onChange={(e) => setUserName(e.target.value)}
+        placeholder="Username"
         required
         className={field}
       />
@@ -47,8 +56,7 @@ export default function AdminLoginPage() {
       >
         {status === "busy" ? "Signing in…" : "Sign in"}
       </button>
-      {status === "ok" && <p className="text-sm text-teal-300">Signed in.</p>}
-      {status === "denied" && <p className="text-sm text-red-400">Invalid admin ID or password.</p>}
+      {status === "denied" && <p className="text-sm text-red-400">Invalid username or password.</p>}
       {error && <p className="text-sm text-red-400">{error}</p>}
     </form>
   );

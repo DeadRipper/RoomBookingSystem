@@ -6,6 +6,17 @@ import { fetchRoomsFromServer } from "../api/roomBookingApi";
 interface RoomsContextValue {
   rooms: Room[];
   loading: boolean;
+  addRoomLocal: (room: Room) => void;
+}
+
+// StrictMode runs effects twice in development; share one in-flight request so
+// the backend sees a single getAllrooms call.
+let inflightRooms: Promise<Room[]> | null = null;
+function loadRooms(): Promise<Room[]> {
+  inflightRooms ??= fetchRoomsFromServer().finally(() => {
+    inflightRooms = null;
+  });
+  return inflightRooms;
 }
 
 const RoomsContext = createContext<RoomsContextValue | null>(null);
@@ -18,7 +29,7 @@ export function RoomsProvider({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     let cancelled = false;
-    fetchRoomsFromServer()
+    loadRooms()
       .then((r) => {
         if (!cancelled && r.length > 0) setRooms(r);
       })
@@ -31,7 +42,12 @@ export function RoomsProvider({ children }: { children: ReactNode }) {
     };
   }, []);
 
-  return <RoomsContext.Provider value={{ rooms, loading }}>{children}</RoomsContext.Provider>;
+  // Appends a room the server just created, so the lists update without a reload.
+  const addRoomLocal = (room: Room) => setRooms((prev) => [...prev, room]);
+
+  return (
+    <RoomsContext.Provider value={{ rooms, loading, addRoomLocal }}>{children}</RoomsContext.Provider>
+  );
 }
 
 export function useRooms(): RoomsContextValue {

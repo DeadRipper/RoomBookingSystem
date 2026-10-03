@@ -1,5 +1,6 @@
 import { NavLink, Outlet } from "react-router-dom";
 import { useBookings } from "../store/BookingsContext";
+import { useAdmin } from "../store/AdminContext";
 
 const navLinkClass = ({ isActive }: { isActive: boolean }) =>
   `rounded-lg px-3 py-2 text-sm font-medium transition-colors ${
@@ -10,6 +11,7 @@ const navLinkClass = ({ isActive }: { isActive: boolean }) =>
 
 export default function Layout() {
   const { currentUser } = useBookings();
+  const { admin, signOut } = useAdmin();
 
   return (
     <div className="min-h-screen bg-[#0b0e14] text-slate-100">
@@ -30,9 +32,9 @@ export default function Layout() {
             </NavLink>
             <NavLink to="/bookings" className={navLinkClass}>
               My Bookings
-              </NavLink>
-              <NavLink to="/admin" className={navLinkClass}>
-                Admin
+            </NavLink>
+            <NavLink to={admin ? "/admin" : "/admin/login"} className={navLinkClass}>
+              Admin
             </NavLink>
           </nav>
 
@@ -43,6 +45,15 @@ export default function Layout() {
               readOnly
               className="w-28 cursor-default rounded-lg border border-white/10 bg-white/5 px-2.5 py-1.5 text-sm text-slate-100 outline-none"
             />
+            {admin && (
+              <button
+                onClick={signOut}
+                title={`Signed in as admin ${admin}`}
+                className="rounded-lg border border-white/10 px-2.5 py-1.5 text-sm text-slate-300 hover:bg-white/5"
+              >
+                Log out
+              </button>
+            )}
           </div>
         </div>
       </header>

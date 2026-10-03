@@ -5,15 +5,18 @@ import "./index.css";
 import App from "./App.tsx";
 import { BookingsProvider } from "./store/BookingsContext";
 import { RoomsProvider } from "./store/RoomsContext";
+import { AdminProvider } from "./store/AdminContext";
 
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
     <BrowserRouter>
-      <RoomsProvider>
-        <BookingsProvider>
-          <App />
-        </BookingsProvider>
-      </RoomsProvider>
+      <AdminProvider>
+        <RoomsProvider>
+          <BookingsProvider>
+            <App />
+          </BookingsProvider>
+        </RoomsProvider>
+      </AdminProvider>
     </BrowserRouter>
   </StrictMode>,
 );

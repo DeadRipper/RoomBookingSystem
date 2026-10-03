@@ -4,6 +4,8 @@ import RoomsPage from "./pages/RoomsPage";
 import RoomDetailPage from "./pages/RoomDetailPage";
 import MyBookingsPage from "./pages/MyBookingsPage";
 import AdminLoginPage from "./pages/AdminLoginPage";
+import AdminDashboardPage from "./pages/AdminDashboardPage";
+import RequireAdmin from "./components/RequireAdmin";
 
 export default function App() {
   return (
@@ -12,7 +14,10 @@ export default function App() {
         <Route index element={<RoomsPage />} />
         <Route path="rooms/:roomId" element={<RoomDetailPage />} />
         <Route path="bookings" element={<MyBookingsPage />} />
-        <Route path="admin" element={<AdminLoginPage />} />
+        <Route path="admin/login" element={<AdminLoginPage />} />
+        <Route path="admin" element={<RequireAdmin />}>
+          <Route index element={<AdminDashboardPage />} />
+        </Route>
       </Route>
     </Routes>
   );
