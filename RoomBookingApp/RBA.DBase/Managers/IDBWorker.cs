@@ -26,5 +26,7 @@ namespace RBA.DBase.Managers
         Task<RoomModel> InsertNewRoom(NewRoomRequest request);
         Task<List<AmenityModel>> GetRoomConfigs();
         Task<int> GetTotalBookings();
+        Task<int> GetAllRoomsCount();
+        Task<int> GetTodayBookings();
     }
 }

@@ -169,5 +169,15 @@ namespace RBA.DBase
         {
             return await appDbContext.Reservations.CountAsync();
         }
+
+        public async Task<int> GetTotaGetTodayBookingslBookings()
+        {
+            return await appDbContext.Reservations.Where(r => r.Date.Date == DateTime.Today).CountAsync();
+        }
+
+        public async Task<int> GetAllRoomsCount()
+        {
+            return await appDbContext.Rooms.CountAsync();
+        }
     }
 }
