@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using RBA.DBase.Managers;
+using RBA.Models.Request.User.GetUserById;
 using RBA.Models.Request.User.GetUserId;
 using RBA.Models.Request.User.Registration;
 
@@ -23,9 +24,9 @@ namespace RoomBookingApp.Controllers
         }
 
         [HttpPost("getUserById")]
-        public async Task<IActionResult> GetUserById([FromBody] GetUserIdRequest request)
+        public async Task<IActionResult> GetUserById([FromBody] GetUserByIdRequest request)
         {
-            return Ok(await userManagment.GetUserId(request));
+            return Ok(await userManagment.GetUserById(request));
         }
 
         [HttpPost("registrate")]
