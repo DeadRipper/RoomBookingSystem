@@ -25,5 +25,10 @@ namespace RBA.DBase
         {
             return dbWorker.InsertNewRoom(roomRequest);
         }
+
+        public Task<List<string>> GetRoomConfigs()
+        {
+            return dbWorker.GetRoomConfigs();
+        }
     }
 }

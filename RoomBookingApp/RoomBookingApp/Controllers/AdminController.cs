@@ -27,6 +27,13 @@ namespace RoomBookingApp.Controllers
             return Ok();
         }
 
+        [HttpGet("getRoomConfigs")]
+        public async Task<IActionResult> GetRoomConfigs()
+        {
+            var roomConfigs = await _adminManagment.GetRoomConfigs();
+            return Ok(roomConfigs);
+        }
+
         [HttpPost("addRoom")]
         public async Task<IActionResult> AddRoom([FromBody] NewRoomRequest request)
         {

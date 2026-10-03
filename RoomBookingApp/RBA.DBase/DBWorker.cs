@@ -159,5 +159,10 @@ namespace RBA.DBase
             await appDbContext.SaveChangesAsync();
             return newRoom;
         }
+
+        public Task<List<string>> GetRoomConfigs()
+        {
+            return appDbContext.Amenities.Select(x => x.Name).ToListAsync();
+        }
     }
 }

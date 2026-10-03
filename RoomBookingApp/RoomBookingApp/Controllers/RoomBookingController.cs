@@ -29,12 +29,6 @@ namespace RoomBookingApp.Controllers
                 RoomId = request.RoomId,
                 BookState = await _roomManagment.BookRoom(request)
             });
-            //return Ok(JsonBuildHelper.BuildJsonResponse(new BookRoomResponse
-            //{
-            //    RequestId = request.RequestId,
-            //    RoomId = request.RoomId,
-            //    BookState = await _roomManagment.BookRoom(request)
-            //}));
         }
 
         [HttpPost("unbookRoom")]
@@ -46,12 +40,6 @@ namespace RoomBookingApp.Controllers
                 RoomId = request.RoomId,
                 BookState = await _roomManagment.UnbookRoom(request)
             });
-            //return Ok(JsonBuildHelper.BuildJsonResponse(new UnbookRoomResponse
-            //{
-            //    RequestId = request.RequestId,
-            //    RoomId = request.RoomId,
-            //    BookState = await _roomManagment.UnbookRoom(request)
-            //}));
         }
 
         [HttpPost("changeBookingSettings")]
@@ -63,11 +51,6 @@ namespace RoomBookingApp.Controllers
         [HttpPost("checkAvailable")]
         public async Task<IActionResult> CheckAvailable([FromBody] CheckRoomAvailableRequest request)
         {
-            //return Ok(JsonBuildHelper.BuildJsonResponse(new CheckRoomAvailableResponse
-            //{
-            //    RequestId = request.RequestId,
-            //    roomState = await _roomManagment.CheckIfRoomIsAvailable(request)
-            //}));
             return Ok(new CheckRoomAvailableResponse
             {
                 RequestId = request.RequestId,
