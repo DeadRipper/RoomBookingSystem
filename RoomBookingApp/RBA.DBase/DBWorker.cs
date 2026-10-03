@@ -160,9 +160,9 @@ namespace RBA.DBase
             return newRoom;
         }
 
-        public Task<List<string>> GetRoomConfigs()
+        public Task<List<AmenityModel>> GetRoomConfigs()
         {
-            return appDbContext.Amenities.Select(x => x.Name).ToListAsync();
+            return appDbContext.Amenities.ToListAsync();
         }
     }
 }

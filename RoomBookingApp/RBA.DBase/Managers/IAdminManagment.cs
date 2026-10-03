@@ -13,6 +13,6 @@ namespace RBA.DBase.Managers
         Task<bool> LoginAsync(LoginRequest request);
         Task<bool> LogoutAsync(LogoutRequest request);
         Task<RoomModel> InsertNewRoom(NewRoomRequest request);
-        Task<List<string>> GetRoomConfigs();
+        Task<List<AmenityModel>> GetRoomConfigs();
     }
 }

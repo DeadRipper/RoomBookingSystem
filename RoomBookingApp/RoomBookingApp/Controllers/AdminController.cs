@@ -36,9 +36,8 @@ namespace RoomBookingApp.Controllers
 
         [HttpPost("addRoom")]
         public async Task<IActionResult> AddRoom([FromBody] NewRoomRequest request)
-        {
-            var newRoom = await _adminManagment.InsertNewRoom(request);
-            return Ok(newRoom);
+        {            
+            return Ok(await _adminManagment.InsertNewRoom(request));
         }
     }
 }

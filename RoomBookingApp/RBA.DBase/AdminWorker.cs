@@ -26,7 +26,7 @@ namespace RBA.DBase
             return dbWorker.InsertNewRoom(roomRequest);
         }
 
-        public Task<List<string>> GetRoomConfigs()
+        public Task<List<AmenityModel>> GetRoomConfigs()
         {
             return dbWorker.GetRoomConfigs();
         }
