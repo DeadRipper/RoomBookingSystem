@@ -106,5 +106,6 @@ exercised against it.
 | `POST /api/Admin/login` / `logout` | `adminLogin` / `adminLogout` |
 | `POST /api/Admin/addRoom` | `addRoomOnServer` |
 | `GET /api/Admin/getRoomConfigs` | `fetchAmenitiesFromServer` |
+| `GET /api/Admin/getAllReservations` | `fetchAllReservations` |
 | `GET /api/Admin/totalBookings` / `getTodayBookings` / `getAllRoomsCount` | `fetchTotalBookings` / `fetchTodayBookings` / `fetchRoomsCount` |
 | `POST /api/RoomBooking/checkAvailable` | not used by the front yet |

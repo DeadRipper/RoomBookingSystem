@@ -5,9 +5,9 @@ import { useRooms } from "../store/RoomsContext";
 import { useAdmin } from "../store/AdminContext";
 import { isoDate } from "../lib/time";
 import AddRoomForm from "../components/AddRoomForm";
+import AdminReservations from "../components/AdminReservations";
 
 const upcoming = [
-  "All bookings overview",
   "Cancel any booking",
   "Edit / delete rooms & maintenance",
 ];
@@ -68,6 +68,8 @@ export default function AdminDashboardPage() {
           </div>
         ))}
       </div>
+
+      <AdminReservations />
 
       <AddRoomForm />
 

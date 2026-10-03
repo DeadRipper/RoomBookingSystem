@@ -453,3 +453,43 @@ async function fetchCount(url: string, what: string): Promise<number> {
 export const fetchTotalBookings = () => fetchCount("/api/Admin/totalBookings", "bookings");
 export const fetchTodayBookings = () => fetchCount("/api/Admin/getTodayBookings", "today's bookings");
 export const fetchRoomsCount = () => fetchCount("/api/Admin/getAllRoomsCount", "rooms");
+
+// --- All reservations (AdminController.getAllReservations) ----------------
+// GET. Replies Ok(List<ReservationModel>) as camelCase JSON. The query has no
+// Include(), so `users` and `room` are null and the user FK isn't serialized:
+// only id, date and roomId are usable until the backend loads the relations.
+
+const ALL_RESERVATIONS_URL = "/api/Admin/getAllReservations";
+
+export interface ServerReservation {
+  id: number;
+  date: string; // ISO 8601 datetime
+  roomId: number;
+  userName: string | null; // null while the backend doesn't include Users
+}
+
+export async function fetchAllReservations(): Promise<ServerReservation[]> {
+  let response: Response;
+  try {
+    response = await loggedFetch(ALL_RESERVATIONS_URL);
+  } catch (cause) {
+    throw new RoomBookingApiError("Could not reach the booking server.", { cause });
+  }
+  if (!response.ok) {
+    throw new RoomBookingApiError(`Booking server could not list reservations (${response.status}).`);
+  }
+
+  const body: unknown = await response.json().catch(() => []);
+  if (!Array.isArray(body)) return [];
+  return (body as Array<{
+    id?: number;
+    date?: string;
+    roomId?: number;
+    users?: { userName?: string } | null;
+  }>).map((r) => ({
+    id: r.id ?? 0,
+    date: r.date ?? "",
+    roomId: r.roomId ?? 0,
+    userName: r.users?.userName ?? null,
+  }));
+}
