@@ -14,5 +14,6 @@ namespace RBA.DBase.Managers
         Task<bool> LogoutAsync(LogoutRequest request);
         Task<RoomModel> InsertNewRoom(NewRoomRequest request);
         Task<List<AmenityModel>> GetRoomConfigs();
+        Task<int> GetTotalBookings();
     }
 }

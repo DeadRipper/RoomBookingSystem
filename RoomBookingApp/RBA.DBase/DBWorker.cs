@@ -150,7 +150,7 @@ namespace RBA.DBase
                 Name = request.Name,
                 Floor = request.Floor,
                 Capacity = request.Capacity,
-                Amenities = request.Amenities,
+                Amenities = await appDbContext.Amenities.FirstOrDefaultAsync(x => x.Id == request.Amenities.Id) ?? new AmenityModel(),
                 Image = request.Image,
                 RoomState = RoomState.Available,
                 Reservations = new List<ReservationModel>()
@@ -163,6 +163,11 @@ namespace RBA.DBase
         public Task<List<AmenityModel>> GetRoomConfigs()
         {
             return appDbContext.Amenities.ToListAsync();
+        }
+
+        public async Task<int> GetTotalBookings()
+        {
+            return await appDbContext.Reservations.CountAsync();
         }
     }
 }
