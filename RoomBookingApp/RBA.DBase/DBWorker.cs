@@ -6,6 +6,7 @@ using RBA.Models.Models.AdminModels;
 using RBA.Models.Models.RoomBookingModels;
 using RBA.Models.Request.Admin.Login;
 using RBA.Models.Request.Admin.Logout;
+using RBA.Models.Request.Admin.NewRoom;
 using RBA.Models.Request.RoomBooking.BookRoom;
 using RBA.Models.Request.RoomBooking.CheckRoomAvailable;
 using RBA.Models.Request.RoomBooking.UnbookRoom;
@@ -140,6 +141,23 @@ namespace RBA.DBase
             await appDbContext.SaveChangesAsync();
 
             return true;
+        }
+
+        public async Task<RoomModel> InsertNewRoom(NewRoomRequest request)
+        {
+            var newRoom = new RoomModel
+            {
+                Name = request.Name,
+                Floor = request.Floor,
+                Capacity = request.Capacity,
+                Amenities = request.Amenities,
+                Image = request.Image,
+                RoomState = RoomState.Available,
+                Reservations = new List<ReservationModel>()
+            };
+            appDbContext.Rooms.Add(newRoom);
+            await appDbContext.SaveChangesAsync();
+            return newRoom;
         }
     }
 }

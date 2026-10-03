@@ -1,4 +1,5 @@
 ﻿using RBA.DBase.Managers;
+using RBA.Models.Models.RoomBookingModels;
 using RBA.Models.Request.Admin.Login;
 using RBA.Models.Request.Admin.Logout;
 using System;
@@ -17,6 +18,11 @@ namespace RBA.DBase
         public Task<bool> LogoutAsync(LogoutRequest request)
         {
             return dbWorker.LogoutAsync(request);
+        }
+
+        public Task<RoomModel> InsertNewRoom()
+        {
+            return dbWorker.InsertNewRoom();
         }
     }
 }
