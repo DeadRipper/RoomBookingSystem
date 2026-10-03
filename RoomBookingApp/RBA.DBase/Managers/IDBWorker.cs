@@ -6,6 +6,7 @@ using RBA.Models.Request.Admin.Reservations;
 using RBA.Models.Request.RoomBooking.BookRoom;
 using RBA.Models.Request.RoomBooking.CheckRoomAvailable;
 using RBA.Models.Request.RoomBooking.UnbookRoom;
+using RBA.Models.Request.User.Registration;
 using RBA.Models.States;
 using System;
 using System.Collections.Generic;
@@ -30,5 +31,7 @@ namespace RBA.DBase.Managers
         Task<int> GetAllRoomsCount();
         Task<int> GetTodayBookings();
         Task<List<ReservationDTO>> GetAllReservations();
+        //----------------------- User Management -----------------------
+        Task<bool> AddUserAsync(RegistrationRequest request);
     }
 }

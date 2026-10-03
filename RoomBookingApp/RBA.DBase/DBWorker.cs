@@ -11,6 +11,7 @@ using RBA.Models.Request.Admin.Reservations;
 using RBA.Models.Request.RoomBooking.BookRoom;
 using RBA.Models.Request.RoomBooking.CheckRoomAvailable;
 using RBA.Models.Request.RoomBooking.UnbookRoom;
+using RBA.Models.Request.User.Registration;
 using RBA.Models.States;
 using System;
 using System.Collections.Generic;
@@ -61,6 +62,11 @@ namespace RBA.DBase
             {
                 RoomId = bookRoomRequest.RoomId,
                 Date = bookRoomRequest.BookingDate,
+                Users = new UserModel()
+                {
+                    UserName = bookRoomRequest.UserName
+                },
+                Room = appDbContext.Rooms.Where(x => x.Id == bookRoomRequest.RoomId).FirstOrDefault()
             };
             appDbContext.Reservations.Add(reservation);
             appDbContext.Entry(reservation).Property("UsersId").CurrentValue = bookRoomRequest.UserId;
@@ -200,6 +206,18 @@ namespace RBA.DBase
             }
 
             return resList;
+        }
+
+        public async Task<bool> AddUserAsync(RegistrationRequest request)
+        {
+            await appDbContext.Users.AddAsync(new UserModel
+            {
+                UserName = request.UserName,
+                Password = request.Password,
+                Email = request.Email
+            });
+            await appDbContext.SaveChangesAsync();
+            return true;
         }
     }
 }
