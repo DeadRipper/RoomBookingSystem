@@ -67,7 +67,8 @@ namespace RBA.DBase
                 {
                     UserName = bookRoomRequest.UserName
                 },
-                Room = appDbContext.Rooms.Where(x => x.Id == bookRoomRequest.RoomId).FirstOrDefault()
+                Room = appDbContext.Rooms.Where(x => x.Id == bookRoomRequest.RoomId).FirstOrDefault(),
+                MeetingTitle = bookRoomRequest.MeetingTitle
             };
             appDbContext.Reservations.Add(reservation);
             appDbContext.Entry(reservation).Property("UsersId").CurrentValue = bookRoomRequest.UserId;
