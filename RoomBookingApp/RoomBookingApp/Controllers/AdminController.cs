@@ -45,11 +45,16 @@ namespace RoomBookingApp.Controllers
             return Ok(await _adminManagment.GetTotalBookings());
         }
 
+        [HttpGet("getAllReservations")]
+        public async Task<IActionResult> GetAllReservations()
+        {
+            return Ok(await _adminManagment.GetAllReservations());
+        }
+
         [HttpGet("getRoomConfigs")]
         public async Task<IActionResult> GetRoomConfigs()
         {
-            var roomConfigs = await _adminManagment.GetRoomConfigs();
-            return Ok(roomConfigs);
+            return Ok(await _adminManagment.GetRoomConfigs());
         }
 
         [HttpPost("addRoom")]

@@ -45,5 +45,10 @@ namespace RBA.DBase
         {
             return dbWorker.GetAllRoomsCount();
         }
+
+        public Task<List<ReservationModel>> GetAllReservations()
+        {
+            return dbWorker.GetAllReservations();
+        }
     }
 }

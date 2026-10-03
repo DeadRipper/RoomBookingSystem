@@ -28,5 +28,6 @@ namespace RBA.DBase.Managers
         Task<int> GetTotalBookings();
         Task<int> GetAllRoomsCount();
         Task<int> GetTodayBookings();
+        Task<List<ReservationModel>> GetAllReservations();
     }
 }

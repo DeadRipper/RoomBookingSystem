@@ -179,5 +179,10 @@ namespace RBA.DBase
         {
             return await appDbContext.Rooms.CountAsync();
         }
+
+        public async Task<List<ReservationModel>> GetAllReservations()
+        {
+            return await appDbContext.Reservations.ToListAsync();
+        }
     }
 }

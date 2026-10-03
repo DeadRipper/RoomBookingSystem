@@ -4,7 +4,7 @@ using System.Text;
 
 namespace RBA.Models.Request.Admin.Logout
 {
-    public class LogoutRequest
+    public class LogoutRequest : RequestBase
     {
         public string UserName { get; set; }
     }
