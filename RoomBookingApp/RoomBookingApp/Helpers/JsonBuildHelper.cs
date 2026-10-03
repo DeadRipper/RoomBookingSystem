@@ -1,7 +1,6 @@
 ﻿using Microsoft.AspNetCore.Http.Json;
 using Microsoft.Extensions.Options;
 using RBA.Models.Request;
-using RBA.Models.Request.BookRoom;
 using RBA.Models.States;
 using System.Text.Json;
 

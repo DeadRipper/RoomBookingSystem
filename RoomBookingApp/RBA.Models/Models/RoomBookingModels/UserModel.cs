@@ -1,4 +1,4 @@
-﻿namespace RBA.Models.Models
+﻿namespace RBA.Models.Models.RoomBookingModels
 {
     public class UserModel
     {

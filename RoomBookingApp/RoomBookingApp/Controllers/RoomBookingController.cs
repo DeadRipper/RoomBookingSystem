@@ -1,10 +1,10 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using RBA.DBase.Managers;
-using RBA.Models.Request.BookRoom;
-using RBA.Models.Request.ChangeBookingSettings;
-using RBA.Models.Request.CheckRoomAvailable;
-using RBA.Models.Request.UnbookRoom;
+using RBA.Models.Request.RoomBooking.BookRoom;
+using RBA.Models.Request.RoomBooking.ChangeBookingSettings;
+using RBA.Models.Request.RoomBooking.CheckRoomAvailable;
+using RBA.Models.Request.RoomBooking.UnbookRoom;
 using RoomBookingApp.Helpers;
 using System.Reflection;
 
@@ -14,6 +14,12 @@ namespace RoomBookingApp.Controllers
     [ApiController]
     public class RoomBookingController(IRoomManagment _roomManagment) : ControllerBase
     {
+        [HttpPost("getAllrooms")]
+        public async Task<IActionResult> RoomInfo()
+        {
+            return Ok(await _roomManagment.GetAllRooms() ?? "no rooms");
+        }
+
         [HttpPost("bookRoom")]
         public async Task<IActionResult> BookRoom([FromBody] BookRoomRequest request)
         {

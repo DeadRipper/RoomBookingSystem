@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace RBA.Models.Request.BookRoom
+namespace RBA.Models.Request.RoomBooking.BookRoom
 {
     public class BookRoomRequest : RequestBase
     {

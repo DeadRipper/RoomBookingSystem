@@ -2,14 +2,18 @@
 using Microsoft.Extensions.Logging;
 using RBA.DBase.DBRelations;
 using RBA.DBase.Managers;
-using RBA.Models.Models;
-using RBA.Models.Request.BookRoom;
-using RBA.Models.Request.ChangeBookingSettings;
-using RBA.Models.Request.CheckRoomAvailable;
-using RBA.Models.Request.UnbookRoom;
+using RBA.Models.Models.AdminModels;
+using RBA.Models.Models.RoomBookingModels;
+using RBA.Models.Request.Admin.Login;
+using RBA.Models.Request.Admin.Logout;
+using RBA.Models.Request.Admin.NewRoom;
+using RBA.Models.Request.RoomBooking.BookRoom;
+using RBA.Models.Request.RoomBooking.CheckRoomAvailable;
+using RBA.Models.Request.RoomBooking.UnbookRoom;
 using RBA.Models.States;
 using System;
 using System.Collections.Generic;
+using System.Runtime.Serialization.Formatters;
 using System.Text;
 
 namespace RBA.DBase
@@ -89,6 +93,71 @@ namespace RBA.DBase
         public async Task<IEnumerable<RoomModel>> GetAllRooms()
         {
             return await appDbContext.Rooms.Where(x => x.Id != 0).ToListAsync();
+        }
+
+        public async Task<bool> LoginAsync(LoginRequest request)
+        {
+            var isUserExists = await appDbContext.AdminInfo.AnyAsync(x => x.Username == request.UserName);
+            if (!isUserExists)
+            {
+                logger.LogWarning($"Login attempt failed for Admin Username: {request.UserName}");
+                return false;
+            }
+
+            var passCheck = await appDbContext.AdminInfo.Where(x => x.Username == request.UserName && x.Password == request.Password).FirstOrDefaultAsync();
+
+            if (passCheck == null)
+            {
+                logger.LogWarning($"Login attempt failed for Admin Username: {request.UserName}");
+                return false;
+            }
+
+            var info = await appDbContext.AdminInfo
+                .FirstAsync(x => x.Username == request.UserName && x.Password == request.Password);
+            info.CurrentlyIn = 1;
+            info.LoginDate = DateTime.Now;
+
+            appDbContext.Admins.Where(x => x.AdminInfo.Username == request.UserName)?.FirstOrDefault()?.AdminInfo = info;
+            await appDbContext.SaveChangesAsync();
+
+            return true;
+        }
+
+        public async Task<bool> LogoutAsync(LogoutRequest request)
+        {
+            var findCurrentAdmin = appDbContext.AdminInfo.FirstOrDefault(x => x.Username == request.UserName);
+
+            if(findCurrentAdmin == null)
+            {
+                logger.LogWarning($"Logout attempt failed for Admin Username: {request.UserName}");
+                return false;
+            }
+
+            var info = await appDbContext.AdminInfo.FirstAsync(x => x.Username == request.UserName);
+            info.CurrentlyIn = 0;
+            info.LogoutDate = DateTime.Now;
+
+            appDbContext.Admins.Where(x => x.AdminInfo.Username == request.UserName)?.FirstOrDefault()?.AdminInfo = info;
+            await appDbContext.SaveChangesAsync();
+
+            return true;
+        }
+
+        public async Task<RoomModel> InsertNewRoom(NewRoomRequest request)
+        {
+            var newRoom = new RoomModel
+            {
+                Name = request.Name,
+                Floor = request.Floor,
+                Capacity = request.Capacity,
+                Amenities = request.Amenities,
+                Image = request.Image,
+                RoomState = RoomState.Available,
+                Reservations = new List<ReservationModel>()
+            };
+            appDbContext.Rooms.Add(newRoom);
+            await appDbContext.SaveChangesAsync();
+            return newRoom;
         }
     }
 }

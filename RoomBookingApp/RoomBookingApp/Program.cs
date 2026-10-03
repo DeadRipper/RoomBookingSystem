@@ -30,7 +30,8 @@ namespace RoomBookingApp
 
             builder.Services.AddScoped<IRoomManagment, RoomManagment>();
             builder.Services.AddScoped<IDBWorker, DBWorker>();
-            builder.Services.AddSingleton<ICacheWorker, CBWorker>();            
+            builder.Services.AddSingleton<ICacheWorker, CBWorker>();
+            builder.Services.AddScoped<IAdminManagment, AdminWorker>();
 
             builder.Services.AddHttpLogging(logging =>
             {
@@ -52,13 +53,12 @@ namespace RoomBookingApp
                 app.MapOpenApi();
             }
 
-            app.UseHttpsRedirection();
-
-            //app.UseMiddleware<LogRequestMiddleware>();
+            app.UseHttpsRedirection();            
 
             app.UseAuthorization();
 
             app.MapControllers();
+
             app.Run();
         }
     }

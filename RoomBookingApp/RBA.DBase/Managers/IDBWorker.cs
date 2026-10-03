@@ -1,8 +1,10 @@
-﻿using RBA.Models.Models;
-using RBA.Models.Request.BookRoom;
-using RBA.Models.Request.ChangeBookingSettings;
-using RBA.Models.Request.CheckRoomAvailable;
-using RBA.Models.Request.UnbookRoom;
+﻿using RBA.Models.Models.RoomBookingModels;
+using RBA.Models.Request.Admin.Login;
+using RBA.Models.Request.Admin.Logout;
+using RBA.Models.Request.Admin.NewRoom;
+using RBA.Models.Request.RoomBooking.BookRoom;
+using RBA.Models.Request.RoomBooking.CheckRoomAvailable;
+using RBA.Models.Request.RoomBooking.UnbookRoom;
 using RBA.Models.States;
 using System;
 using System.Collections.Generic;
@@ -12,9 +14,15 @@ namespace RBA.DBase.Managers
 {
     public interface IDBWorker
     {
+        //----------------------- Room Booking -----------------------
         Task<RoomState> GetRoomAvailabilityState(CheckRoomAvailableRequest checkRoomAvailableRequest);
         Task<BookState> BookingRoom(BookRoomRequest bookRoomRequest);
         Task<BookState> UnbookingRoom(UnbookRoomRequest unbookRoomRequest);
         Task<IEnumerable<RoomModel>> GetAllRooms();
+
+        //----------------------- Admin Management -----------------------
+        Task<bool> LoginAsync(LoginRequest request);
+        Task<bool> LogoutAsync(LogoutRequest request);
+        Task<RoomModel> InsertNewRoom(NewRoomRequest request);
     }
 }

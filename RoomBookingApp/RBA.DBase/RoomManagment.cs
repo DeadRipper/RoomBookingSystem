@@ -2,10 +2,10 @@
 using RBA.CacheBookings;
 using RBA.DBase.Managers;
 using RBA.Models.Models;
-using RBA.Models.Request.BookRoom;
-using RBA.Models.Request.ChangeBookingSettings;
-using RBA.Models.Request.CheckRoomAvailable;
-using RBA.Models.Request.UnbookRoom;
+using RBA.Models.Request.RoomBooking.BookRoom;
+using RBA.Models.Request.RoomBooking.ChangeBookingSettings;
+using RBA.Models.Request.RoomBooking.CheckRoomAvailable;
+using RBA.Models.Request.RoomBooking.UnbookRoom;
 using RBA.Models.States;
 using System.Text.Json;
 

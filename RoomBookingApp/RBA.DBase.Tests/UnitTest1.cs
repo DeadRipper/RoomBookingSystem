@@ -13,16 +13,7 @@ namespace RBA.DBase.Tests
         [SetUp]
         public void Setup()
         {
-            _appDbContext = new AppDbContext(new DbContextOptionsBuilder<AppDbContext>()
-                .UseInMemoryDatabase(databaseName: "TestDatabase")
-                .Options);
-            _appDbContext.Rooms.Add(new RBA.Models.Models.RoomModel { Id = 1, RoomState = RBA.Models.States.RoomState.Available });
-            _appDbContext.SaveChanges();
-            _mockDBWorker = new Mock<IDBWorker>();
-                {
-                                    
-                }
-            ;
+            
         }
 
         [Test]
