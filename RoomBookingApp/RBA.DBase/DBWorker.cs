@@ -111,12 +111,18 @@ namespace RBA.DBase
                 return false;
             }
 
+            var getAdminData = await appDbContext.Admins.Where(x => x.AdminInfo.Username == request.UserName && x.AdminInfo.Password == request.Password).Select(xx => xx.AdminInfo).FirstOrDefaultAsync();
+
             var currentAdminLogIn = new AdminModel
             {
                 AdminInfo = new AdminInfo
                 {
+                    Username = request.UserName,
+                    Password = request.Password,
+                    Email = getAdminData.Email,
+                    Roles = getAdminData.Roles,
                     CurrentlyIn = 1,
-                    LoginDate = DateTime.Now,
+                    LoginDate = DateTime.Now
                 }
             };
 
@@ -136,10 +142,22 @@ namespace RBA.DBase
                 return false;
             }
 
+            findCurrentAdmin.AdminInfo = await appDbContext?.Admins?.Where(x => x.AdminInfo != null && x.AdminInfo.Username == request.UserName)?.Select(xx => xx.AdminInfo)?.FirstOrDefaultAsync() ?? null;
+
+            if (findCurrentAdmin.AdminInfo == null)
+            {
+                logger.LogWarning($"Logout attempt failed for Admin Username: {request.UserName}");
+                return false;
+            }
+
             var currentAdminLogOut = new AdminModel
             {
                 AdminInfo = new AdminInfo
                 {
+                    Username = request.UserName,
+                    Password = findCurrentAdmin.AdminInfo.Password,
+                    Email = findCurrentAdmin.AdminInfo.Email,
+                    Roles = findCurrentAdmin.AdminInfo.Roles,
                     CurrentlyIn = 0,
                     LogoutDate = DateTime.Now,
                 }
