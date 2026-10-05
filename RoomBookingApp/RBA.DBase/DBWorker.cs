@@ -4,6 +4,7 @@ using RBA.DBase.DBRelations;
 using RBA.DBase.Managers;
 using RBA.Models.Models.AdminModels;
 using RBA.Models.Models.RoomBookingModels;
+using RBA.Models.Request.Admin.Cancel;
 using RBA.Models.Request.Admin.Login;
 using RBA.Models.Request.Admin.Logout;
 using RBA.Models.Request.Admin.NewRoom;
@@ -169,6 +170,20 @@ namespace RBA.DBase
             appDbContext.Rooms.Add(newRoom);
             await appDbContext.SaveChangesAsync();
             return newRoom;
+        }
+
+        public async Task<bool> CancelBookingAsync(CancelBookingRequest request)
+        {
+            var reservation = await appDbContext.Reservations.FirstOrDefaultAsync(r => r.Id == request.Id);
+            if (reservation == null)
+            {
+                logger.LogWarning($"Cancel booking attempt failed for Booking ID: {request.Id}");
+                return false;
+            }
+
+            appDbContext.Reservations.Remove(reservation);
+            await appDbContext.SaveChangesAsync();
+            return true;
         }
 
         public Task<List<AmenityModel>> GetRoomConfigs()

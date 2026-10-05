@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using RBA.DBase.Managers;
+using RBA.Models.Request.Admin.Cancel;
 using RBA.Models.Request.Admin.Login;
 using RBA.Models.Request.Admin.Logout;
 using RBA.Models.Request.Admin.NewRoom;
@@ -61,6 +62,12 @@ namespace RoomBookingApp.Controllers
         public async Task<IActionResult> AddRoom([FromBody] NewRoomRequest request)
         {            
             return Ok(await _adminManagment.InsertNewRoom(request));
+        }
+
+        [HttpPost("cancelBooking")]
+        public async Task<IActionResult> CancelBooking([FromBody] CancelBookingRequest request)
+        {
+            return Ok(await _adminManagment.CancelBookingAsync(request));
         }
     }
 }

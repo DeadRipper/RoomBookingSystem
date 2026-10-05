@@ -4,7 +4,8 @@ using System.Text;
 
 namespace RBA.Models.Request.Admin.Cancel
 {
-    public class CancelRequest : RequestBase
+    public class CancelBookingRequest : RequestBase
     {
+        public int Id { get; set; }
     }
 }
