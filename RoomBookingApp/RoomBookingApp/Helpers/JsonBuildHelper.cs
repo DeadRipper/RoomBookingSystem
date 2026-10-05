@@ -8,7 +8,7 @@ namespace RoomBookingApp.Helpers
 {
     public static class JsonBuildHelper
     {
-        public static string BuildJsonResponse(BookRoomResponse bookRoomResponse)
+        public static string BuildJsonResponse(ResponseBase baseResponse)
         {
             JsonSerializerOptions options = new()
             {
@@ -16,7 +16,7 @@ namespace RoomBookingApp.Helpers
             };
             JsonSerializerOptions optionsCopy = new(options);
             optionsCopy.DefaultIgnoreCondition = System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull;
-            return JsonSerializer.Serialize(bookRoomResponse, optionsCopy);
+            return JsonSerializer.Serialize(baseResponse, optionsCopy);
         }
     }
 }

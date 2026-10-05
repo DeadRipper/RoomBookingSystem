@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using RBA.Models.Models;
+using RBA.Models.Models.AdminModels;
+using RBA.Models.Models.RoomBookingModels;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -11,6 +12,9 @@ namespace RBA.DBase.DBRelations
         public DbSet<UserModel> Users => Set<UserModel>();
         public DbSet<RoomModel> Rooms => Set<RoomModel>();
         public DbSet<ReservationModel> Reservations => Set<ReservationModel>();
+        public DbSet<AmenityModel> Amenities => Set<AmenityModel>();
+        public DbSet<AdminModel> Admins => Set<AdminModel>();
+        public DbSet<AdminInfo> AdminInfo => Set<AdminInfo>();
 
         public AppDbContext(DbContextOptions<AppDbContext> options) : base(options)
         {

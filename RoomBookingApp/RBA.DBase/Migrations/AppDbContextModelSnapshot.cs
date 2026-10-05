@@ -22,7 +22,63 @@ namespace RBA.DBase.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
-            modelBuilder.Entity("RBA.Models.Models.AmenityModel", b =>
+            modelBuilder.Entity("RBA.Models.Models.AdminModels.AdminInfo", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("CurrentlyIn")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Email")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("LoginDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("LogoutDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Password")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.PrimitiveCollection<string>("Roles")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Username")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("AdminInfo");
+                });
+
+            modelBuilder.Entity("RBA.Models.Models.AdminModels.AdminModel", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("AdminInfoId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("AdminInfoId");
+
+                    b.ToTable("Admins");
+                });
+
+            modelBuilder.Entity("RBA.Models.Models.RoomBookingModels.AmenityModel", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -36,10 +92,10 @@ namespace RBA.DBase.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("AmenityModel");
+                    b.ToTable("Amenities");
                 });
 
-            modelBuilder.Entity("RBA.Models.Models.ReservationModel", b =>
+            modelBuilder.Entity("RBA.Models.Models.RoomBookingModels.ReservationModel", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -50,17 +106,22 @@ namespace RBA.DBase.Migrations
                     b.Property<DateTime>("Date")
                         .HasColumnType("datetime2");
 
-                    b.Property<int>("UsersId")
+                    b.Property<string>("MeetingTitle")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("RoomId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("UserId")
                         .HasColumnType("int");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("UsersId");
-
                     b.ToTable("Reservations");
                 });
 
-            modelBuilder.Entity("RBA.Models.Models.RoomModel", b =>
+            modelBuilder.Entity("RBA.Models.Models.RoomBookingModels.RoomModel", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -85,6 +146,10 @@ namespace RBA.DBase.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.PrimitiveCollection<string>("ReservationsId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<int>("RoomState")
                         .HasColumnType("int");
 
@@ -95,13 +160,21 @@ namespace RBA.DBase.Migrations
                     b.ToTable("Rooms");
                 });
 
-            modelBuilder.Entity("RBA.Models.Models.UserModel", b =>
+            modelBuilder.Entity("RBA.Models.Models.RoomBookingModels.UserModel", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Email")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Password")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("UserName")
                         .IsRequired()
@@ -112,20 +185,20 @@ namespace RBA.DBase.Migrations
                     b.ToTable("Users");
                 });
 
-            modelBuilder.Entity("RBA.Models.Models.ReservationModel", b =>
+            modelBuilder.Entity("RBA.Models.Models.AdminModels.AdminModel", b =>
                 {
-                    b.HasOne("RBA.Models.Models.UserModel", "Users")
+                    b.HasOne("RBA.Models.Models.AdminModels.AdminInfo", "AdminInfo")
                         .WithMany()
-                        .HasForeignKey("UsersId")
+                        .HasForeignKey("AdminInfoId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("Users");
+                    b.Navigation("AdminInfo");
                 });
 
-            modelBuilder.Entity("RBA.Models.Models.RoomModel", b =>
+            modelBuilder.Entity("RBA.Models.Models.RoomBookingModels.RoomModel", b =>
                 {
-                    b.HasOne("RBA.Models.Models.AmenityModel", "Amenities")
+                    b.HasOne("RBA.Models.Models.RoomBookingModels.AmenityModel", "Amenities")
                         .WithMany()
                         .HasForeignKey("AmenitiesId")
                         .OnDelete(DeleteBehavior.Cascade)

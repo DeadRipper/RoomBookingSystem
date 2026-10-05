@@ -1,7 +1,10 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using RBA.DBase.Managers;
-using RBA.Models.Request;
+using RBA.Models.Request.RoomBooking.BookRoom;
+using RBA.Models.Request.RoomBooking.ChangeBookingSettings;
+using RBA.Models.Request.RoomBooking.CheckRoomAvailable;
+using RBA.Models.Request.RoomBooking.UnbookRoom;
 using RoomBookingApp.Helpers;
 using System.Reflection;
 
@@ -11,34 +14,48 @@ namespace RoomBookingApp.Controllers
     [ApiController]
     public class RoomBookingController(IRoomManagment _roomManagment) : ControllerBase
     {
+        [HttpPost("getAllrooms")]
+        public async Task<IActionResult> RoomInfo()
+        {
+            return Ok(await _roomManagment.GetAllRooms() ?? "no rooms");
+        }
+
         [HttpPost("bookRoom")]
         public async Task<IActionResult> BookRoom([FromBody] BookRoomRequest request)
         {
             return Ok(new BookRoomResponse
             {
+                RequestId = request.RequestId,
                 RoomId = request.RoomId,
                 BookState = await _roomManagment.BookRoom(request)
             });
         }
 
         [HttpPost("unbookRoom")]
-        public async Task<IActionResult> UnbookRoom([FromBody] BookRoomRequest request)
+        public async Task<IActionResult> UnbookRoom([FromBody] UnbookRoomRequest request)
         {
-            return Ok(new BookRoomResponse
+            return Ok(new UnbookRoomResponse
             {
+                RequestId = request.RequestId,
                 RoomId = request.RoomId,
-                BookState = await _roomManagment.UnbookRoom(request.RoomId)
+                BookState = await _roomManagment.UnbookRoom(request)
             });
         }
 
-        [HttpPost("checkAvailable")]
-        public async Task<IActionResult> CheckAvailable([FromBody] BookRoomRequest request)
+        [HttpPost("changeBookingSettings")]
+        public async Task<IActionResult> ChangeBookingSettings([FromBody] ChangeBookingSettingsRequest request)
         {
-            return Ok(JsonBuildHelper.BuildJsonResponse(new BookRoomResponse
+            return Ok(_roomManagment.ChangeBookingSettings(request));
+        }
+
+        [HttpPost("checkAvailable")]
+        public async Task<IActionResult> CheckAvailable([FromBody] CheckRoomAvailableRequest request)
+        {
+            return Ok(new CheckRoomAvailableResponse
             {
-                RoomId = request.RoomId,
-                RoomState = await _roomManagment.CheckIfRoomIsAvailable(request.RoomId)
-            }));
+                RequestId = request.RequestId,
+                roomState = await _roomManagment.CheckIfRoomIsAvailable(request)
+            });
         }
     }
 }

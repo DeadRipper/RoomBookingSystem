@@ -3,7 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace RBA.Models.Models
+namespace RBA.Models.Models.RoomBookingModels
 {
     public class RoomModel
     {
@@ -14,5 +14,6 @@ namespace RBA.Models.Models
         public AmenityModel Amenities { get; set; }
         public string Image { get; set; }
         public RoomState RoomState { get; set; }
+        public List<int> ReservationsId { get; set; }
     }
 }

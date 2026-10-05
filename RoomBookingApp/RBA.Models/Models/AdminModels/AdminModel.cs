@@ -2,11 +2,11 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace RBA.Models.Models
+namespace RBA.Models.Models.AdminModels
 {
-    public class AmenityModel
+    public class AdminModel
     {
         public int Id { get; set; }
-        public string Name { get; set; }
+        public AdminInfo AdminInfo { get; set; }
     }
 }

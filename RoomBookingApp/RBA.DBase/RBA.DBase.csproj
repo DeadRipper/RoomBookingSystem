@@ -4,6 +4,7 @@
     <TargetFramework>net10.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
+    <UserSecretsId>eee07ebb-cc9f-44a3-8826-d8a5b6569eb8</UserSecretsId>
   </PropertyGroup>
 
   <ItemGroup>
@@ -25,6 +26,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\RBA.CacheBookings\RBA.CacheBookings.csproj" />
     <ProjectReference Include="..\RBA.Models\RBA.Models.csproj" />
   </ItemGroup>
 
