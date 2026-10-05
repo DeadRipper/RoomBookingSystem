@@ -1,5 +1,6 @@
 ﻿using RBA.DBase.Managers;
 using RBA.Models.Models.RoomBookingModels;
+using RBA.Models.Request.Admin.Cancel;
 using RBA.Models.Request.Admin.Login;
 using RBA.Models.Request.Admin.Logout;
 using RBA.Models.Request.Admin.NewRoom;
@@ -50,6 +51,11 @@ namespace RBA.DBase
         public Task<List<ReservationModel>> GetAllReservations()
         {
             return dbWorker.GetAllReservations();
+        }
+
+        public Task<bool> CancelBookingAsync(CancelBookingRequest request)
+        {
+            return dbWorker.CancelBookingAsync(request);
         }
     }
 }
