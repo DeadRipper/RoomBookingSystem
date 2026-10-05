@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace RBA.Models.Request.Admin.Logout
+namespace RBA.Models.Request.User.GetUserId
 {
-    public class LogoutRequest : RequestBase
+    public class GetUserIdRequest
     {
         public string UserName { get; set; }
     }

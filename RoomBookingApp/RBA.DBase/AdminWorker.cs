@@ -1,8 +1,10 @@
 ﻿using RBA.DBase.Managers;
 using RBA.Models.Models.RoomBookingModels;
+using RBA.Models.Request.Admin.Cancel;
 using RBA.Models.Request.Admin.Login;
 using RBA.Models.Request.Admin.Logout;
 using RBA.Models.Request.Admin.NewRoom;
+using RBA.Models.Request.Admin.Reservations;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -24,6 +26,36 @@ namespace RBA.DBase
         public Task<RoomModel> InsertNewRoom(NewRoomRequest roomRequest)
         {
             return dbWorker.InsertNewRoom(roomRequest);
+        }
+
+        public Task<List<AmenityModel>> GetRoomConfigs()
+        {
+            return dbWorker.GetRoomConfigs();
+        }
+
+        public Task<int> GetTotalBookings()
+        {
+            return dbWorker.GetTotalBookings();
+        }
+
+        public Task<int> GetTodayBookings()
+        {
+            return dbWorker.GetTodayBookings();
+        }
+
+        public Task<int> GetAllRoomsCount()
+        {
+            return dbWorker.GetAllRoomsCount();
+        }
+
+        public Task<List<ReservationModel>> GetAllReservations()
+        {
+            return dbWorker.GetAllReservations();
+        }
+
+        public Task<bool> CancelBookingAsync(CancelBookingRequest request)
+        {
+            return dbWorker.CancelBookingAsync(request);
         }
     }
 }

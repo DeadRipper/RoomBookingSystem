@@ -6,7 +6,7 @@ using System.Text;
 
 namespace RBA.Models.Request.Admin.NewRoom
 {
-    public class NewRoomRequest
+    public class NewRoomRequest : RequestBase
     {
         public string Name { get; set; }
         public int Floor { get; set; }

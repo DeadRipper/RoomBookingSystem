@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using RBA.DBase.DBRelations;
 
@@ -11,9 +12,11 @@ using RBA.DBase.DBRelations;
 namespace RBA.DBase.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20261003173504_meetingTitle")]
+    partial class meetingTitle
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -113,10 +116,14 @@ namespace RBA.DBase.Migrations
                     b.Property<int>("RoomId")
                         .HasColumnType("int");
 
-                    b.Property<int>("UserId")
+                    b.Property<int>("UsersId")
                         .HasColumnType("int");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("RoomId");
+
+                    b.HasIndex("UsersId");
 
                     b.ToTable("Reservations");
                 });
@@ -143,10 +150,6 @@ namespace RBA.DBase.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Name")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.PrimitiveCollection<string>("ReservationsId")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
@@ -196,6 +199,25 @@ namespace RBA.DBase.Migrations
                     b.Navigation("AdminInfo");
                 });
 
+            modelBuilder.Entity("RBA.Models.Models.RoomBookingModels.ReservationModel", b =>
+                {
+                    b.HasOne("RBA.Models.Models.RoomBookingModels.RoomModel", "Room")
+                        .WithMany("Reservations")
+                        .HasForeignKey("RoomId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("RBA.Models.Models.RoomBookingModels.UserModel", "Users")
+                        .WithMany()
+                        .HasForeignKey("UsersId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Room");
+
+                    b.Navigation("Users");
+                });
+
             modelBuilder.Entity("RBA.Models.Models.RoomBookingModels.RoomModel", b =>
                 {
                     b.HasOne("RBA.Models.Models.RoomBookingModels.AmenityModel", "Amenities")
@@ -205,6 +227,11 @@ namespace RBA.DBase.Migrations
                         .IsRequired();
 
                     b.Navigation("Amenities");
+                });
+
+            modelBuilder.Entity("RBA.Models.Models.RoomBookingModels.RoomModel", b =>
+                {
+                    b.Navigation("Reservations");
                 });
 #pragma warning restore 612, 618
         }

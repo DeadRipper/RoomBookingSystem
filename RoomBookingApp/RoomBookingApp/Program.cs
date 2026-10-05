@@ -32,6 +32,7 @@ namespace RoomBookingApp
             builder.Services.AddScoped<IDBWorker, DBWorker>();
             builder.Services.AddSingleton<ICacheWorker, CBWorker>();
             builder.Services.AddScoped<IAdminManagment, AdminWorker>();
+            builder.Services.AddScoped<IUserManagment, UserWorker>();
 
             builder.Services.AddHttpLogging(logging =>
             {

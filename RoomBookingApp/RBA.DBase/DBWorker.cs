@@ -4,12 +4,17 @@ using RBA.DBase.DBRelations;
 using RBA.DBase.Managers;
 using RBA.Models.Models.AdminModels;
 using RBA.Models.Models.RoomBookingModels;
+using RBA.Models.Request.Admin.Cancel;
 using RBA.Models.Request.Admin.Login;
 using RBA.Models.Request.Admin.Logout;
 using RBA.Models.Request.Admin.NewRoom;
+using RBA.Models.Request.Admin.Reservations;
 using RBA.Models.Request.RoomBooking.BookRoom;
 using RBA.Models.Request.RoomBooking.CheckRoomAvailable;
 using RBA.Models.Request.RoomBooking.UnbookRoom;
+using RBA.Models.Request.User.GetUserById;
+using RBA.Models.Request.User.GetUserId;
+using RBA.Models.Request.User.Registration;
 using RBA.Models.States;
 using System;
 using System.Collections.Generic;
@@ -40,6 +45,12 @@ namespace RBA.DBase
 
         public async Task<BookState> BookingRoom(BookRoomRequest bookRoomRequest)
         {
+            if (appDbContext.Users.FirstOrDefault(x => x.Id == bookRoomRequest.UserId) == null)
+            {
+                logger.LogError($"User with ID: {bookRoomRequest.UserId} not found while booking room for Room ID: {bookRoomRequest.RoomId}");
+                return BookState.Failed;
+            }
+
             try
             {
                 var roomSearch = appDbContext.Rooms.Where(x => x.Id == bookRoomRequest.RoomId);
@@ -60,9 +71,10 @@ namespace RBA.DBase
             {
                 RoomId = bookRoomRequest.RoomId,
                 Date = bookRoomRequest.BookingDate,
+                UserId = bookRoomRequest.UserId,
+                MeetingTitle = bookRoomRequest.MeetingTitle
             };
             appDbContext.Reservations.Add(reservation);
-            appDbContext.Entry(reservation).Property("UsersId").CurrentValue = bookRoomRequest.UserId;
 
             await appDbContext.SaveChangesAsync();
             return BookState.Confirmed;
@@ -150,14 +162,81 @@ namespace RBA.DBase
                 Name = request.Name,
                 Floor = request.Floor,
                 Capacity = request.Capacity,
-                Amenities = request.Amenities,
+                Amenities = await appDbContext.Amenities.FirstOrDefaultAsync(x => x.Id == request.Amenities.Id) ?? new AmenityModel(),
                 Image = request.Image,
                 RoomState = RoomState.Available,
-                Reservations = new List<ReservationModel>()
+                ReservationsId = new List<int>()
             };
             appDbContext.Rooms.Add(newRoom);
             await appDbContext.SaveChangesAsync();
             return newRoom;
+        }
+
+        public async Task<bool> CancelBookingAsync(CancelBookingRequest request)
+        {
+            var reservation = await appDbContext.Reservations.FirstOrDefaultAsync(r => r.Id == request.Id);
+            if (reservation == null)
+            {
+                logger.LogWarning($"Cancel booking attempt failed for Booking ID: {request.Id}");
+                return false;
+            }
+
+            appDbContext.Reservations.Remove(reservation);
+            await appDbContext.SaveChangesAsync();
+            return true;
+        }
+
+        public Task<List<AmenityModel>> GetRoomConfigs()
+        {
+            return appDbContext.Amenities.ToListAsync();
+        }
+
+        public async Task<int> GetTotalBookings()
+        {
+            return await appDbContext.Reservations.CountAsync();
+        }
+
+        public async Task<int> GetTodayBookings()
+        {
+            return await appDbContext.Reservations.Where(r => r.Date.Date == DateTime.Today).CountAsync();
+        }
+
+        public async Task<int> GetAllRoomsCount()
+        {
+            return await appDbContext.Rooms.CountAsync();
+        }
+
+        public async Task<List<ReservationModel>> GetAllReservations()
+        {
+            return await appDbContext.Reservations.ToListAsync();
+        }
+
+        public async Task<bool> AddUserAsync(RegistrationRequest request)
+        {
+            await appDbContext.Users.AddAsync(new UserModel
+            {
+                UserName = request.UserName,
+                Password = request.Password,
+                Email = request.Email
+            });
+            await appDbContext.SaveChangesAsync();
+            return true;
+        }
+
+        public async Task<int> GetUserId(GetUserIdRequest request)
+        {
+            var user = await appDbContext.Users.FirstOrDefaultAsync(u => u.UserName == request.UserName);
+            return user?.Id ?? 0;
+        }
+
+        public async Task<List<int>> GetAllUsersId()
+        {
+            return await appDbContext.Users.Select(u => u.Id).ToListAsync();
+        }
+
+        public async Task<UserModel> GetUserById(GetUserByIdRequest request)
+        {
+            return await appDbContext.Users.FirstOrDefaultAsync(u => u.Id == request.UserId);
         }
     }
 }
