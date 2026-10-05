@@ -13,7 +13,6 @@ namespace RoomBookingApp.Controllers
     [ApiController]
     public class AdminController(IAdminManagment _adminManagment) : ControllerBase
     {
-        [Authorize]
         [HttpPost("login")]
         public async Task<IActionResult> Login([FromBody] LoginRequest request)
         {
@@ -22,6 +21,7 @@ namespace RoomBookingApp.Controllers
             return Ok();
         }
 
+        [Authorize]
         [HttpPost("logout")]
         public async Task<IActionResult> Logout([FromBody] LogoutRequest request)
         {
