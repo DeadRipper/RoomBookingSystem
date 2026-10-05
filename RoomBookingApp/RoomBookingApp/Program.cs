@@ -1,6 +1,8 @@
 
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.HttpLogging;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
 using RBA.CacheBookings;
 using RBA.DBase;
 using RBA.DBase.DBRelations;
@@ -39,6 +41,25 @@ namespace RoomBookingApp
                 logging.LoggingFields = HttpLoggingFields.Request | HttpLoggingFields.Response;
             });
 
+            builder.Services.AddAuthentication(cfg =>
+            {
+                cfg.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                cfg.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+                cfg.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
+            }).AddJwtBearer(x =>
+            {
+                x.RequireHttpsMetadata = false;
+                x.SaveToken = false;
+                x.TokenValidationParameters = new Microsoft.IdentityModel.Tokens.TokenValidationParameters
+                {
+                    ValidateIssuerSigningKey = true,
+                    IssuerSigningKey = new SymmetricSecurityKey(System.Text.Encoding.UTF8.GetBytes(builder.Configuration["Jwt"])),
+                    ValidateIssuer = false,
+                    ValidateAudience = false,
+                    ClockSkew = TimeSpan.Zero
+                };
+            });
+
             var app = builder.Build();
             
             app.UseHttpLogging();
@@ -53,6 +74,8 @@ namespace RoomBookingApp
             {
                 app.MapOpenApi();
             }
+
+            app.UseAuthentication();
 
             app.UseHttpsRedirection();            
 
