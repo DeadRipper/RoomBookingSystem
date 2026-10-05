@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using RBA.DBase.Managers;
 using RBA.Models.Request.Admin.Cancel;
@@ -12,6 +13,7 @@ namespace RoomBookingApp.Controllers
     [ApiController]
     public class AdminController(IAdminManagment _adminManagment) : ControllerBase
     {
+        [Authorize]
         [HttpPost("login")]
         public async Task<IActionResult> Login([FromBody] LoginRequest request)
         {
