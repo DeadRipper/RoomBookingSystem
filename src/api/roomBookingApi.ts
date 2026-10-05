@@ -449,17 +449,18 @@ export const fetchTodayBookings = () => fetchCount("/api/Admin/getTodayBookings"
 export const fetchRoomsCount = () => fetchCount("/api/Admin/getAllRoomsCount", "rooms");
 
 // --- All reservations (AdminController.getAllReservations) ----------------
-// GET. Replies Ok(List<ReservationDTO>) as camelCase JSON:
-// { date, roomName, userName, meetingTitle }.
-// The DTO carries no reservation or room id, and the backend only includes rows
-// whose Room and Users relations are loaded.
+// GET. Replies Ok(List<ReservationModel>) as camelCase JSON. The model is now
+// ids only: { id, meetingTitle, date, userId, roomId } - no room or user names,
+// so callers resolve the room from the rooms list. (There is no endpoint that
+// returns a user by id: UserController.getUserById actually takes a userName.)
 
 const ALL_RESERVATIONS_URL = "/api/Admin/getAllReservations";
 
 export interface ServerReservation {
+  id: number;
   date: string; // ISO 8601 datetime
-  roomName: string;
-  userName: string;
+  roomId: number;
+  userId: number;
   meetingTitle: string;
 }
 
@@ -477,9 +478,10 @@ export async function fetchAllReservations(): Promise<ServerReservation[]> {
   const body: unknown = await response.json().catch(() => []);
   if (!Array.isArray(body)) return [];
   return (body as Array<Partial<ServerReservation>>).map((r) => ({
+    id: r.id ?? 0,
     date: r.date ?? "",
-    roomName: r.roomName ?? "",
-    userName: r.userName ?? "",
+    roomId: r.roomId ?? 0,
+    userId: r.userId ?? 0,
     meetingTitle: r.meetingTitle ?? "",
   }));
 }
@@ -567,4 +569,53 @@ export async function fetchAllUserIds(): Promise<number[]> {
   }
   const ids: unknown = await response.json().catch(() => []);
   return Array.isArray(ids) ? ids.filter((i): i is number => typeof i === "number") : [];
+}
+
+// --- User by id (UserController.getUserById) ------------------------------
+// POST { userId } -> Ok(UserModel) as camelCase JSON, or 204 No Content when the
+// id is unknown. The backend response also includes the stored password and
+// email; only the username is read here and the rest is discarded.
+
+const GET_USER_BY_ID_URL = "/api/User/getUserById";
+
+export async function fetchUserNameById(userId: number): Promise<string | null> {
+  let response: Response;
+  try {
+    response = await loggedFetch(GET_USER_BY_ID_URL, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ userId }),
+    });
+  } catch (cause) {
+    throw new RoomBookingApiError("Could not reach the booking server.", { cause });
+  }
+  if (!response.ok) {
+    throw new RoomBookingApiError(`Booking server could not look up user ${userId} (${response.status}).`);
+  }
+  const user = (await response.json().catch(() => null)) as { userName?: string } | null;
+  return user?.userName ?? null;
+}
+
+// --- Cancel booking (AdminController.cancelBooking) -----------------------
+// POST { id } (reservation id) -> Ok(bool): true when the reservation was
+// deleted, false when no reservation has that id. The row is removed outright.
+
+const CANCEL_BOOKING_URL = "/api/Admin/cancelBooking";
+
+export async function cancelBookingOnServer(id: number): Promise<void> {
+  let response: Response;
+  try {
+    response = await loggedFetch(CANCEL_BOOKING_URL, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ id }),
+    });
+  } catch (cause) {
+    throw new RoomBookingApiError("Could not reach the booking server.", { cause });
+  }
+  if (!response.ok) {
+    throw new RoomBookingApiError(`Booking server could not cancel reservation ${id} (${response.status}).`);
+  }
+  const done: unknown = await response.json().catch(() => null);
+  if (done !== true) throw new RoomBookingFailedError(`Reservation ${id} no longer exists.`);
 }

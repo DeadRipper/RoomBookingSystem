@@ -104,9 +104,9 @@ exercised against it.
 | `POST /api/RoomBooking/getAllrooms` | `fetchRoomsFromServer` |
 | `POST /api/RoomBooking/bookRoom` / `unbookRoom` / `changeBookingSettings` | `bookRoomOnServer` / `unbookRoomOnServer` / `changeBookingOnServer` |
 | `POST /api/Admin/login` / `logout` | `adminLogin` / `adminLogout` |
-| `POST /api/User/registrate` / `getUserId`, `GET /api/User/getAllUsersId` | `registerUser` / `fetchUserId` (used by booking), `fetchAllUserIds` |
+| `POST /api/User/registrate` / `getUserId` / `getUserById`, `GET /api/User/getAllUsersId` | `registerUser` / `fetchUserId` (used by booking) / `fetchUserNameById` (admin table), `fetchAllUserIds` |
 | `POST /api/Admin/addRoom` | `addRoomOnServer` |
 | `GET /api/Admin/getRoomConfigs` | `fetchAmenitiesFromServer` |
-| `GET /api/Admin/getAllReservations` | `fetchAllReservations` |
+| `GET /api/Admin/getAllReservations` (ids only: userId, roomId) | `fetchAllReservations` |
 | `GET /api/Admin/totalBookings` / `getTodayBookings` / `getAllRoomsCount` | `fetchTotalBookings` / `fetchTodayBookings` / `fetchRoomsCount` |
 | `POST /api/RoomBooking/checkAvailable` | not used by the front yet |
