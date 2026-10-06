@@ -7,6 +7,7 @@ using RBA.CacheBookings;
 using RBA.DBase;
 using RBA.DBase.DBRelations;
 using RBA.DBase.Managers;
+using RoomBookingApp.Helpers;
 using RoomBookingApp.Middlewares;
 
 namespace RoomBookingApp
@@ -35,6 +36,7 @@ namespace RoomBookingApp
             builder.Services.AddSingleton<ICacheWorker, CBWorker>();
             builder.Services.AddScoped<IAdminManagment, AdminWorker>();
             builder.Services.AddScoped<IUserManagment, UserWorker>();
+            builder.Services.AddScoped<TokenHelper>();
 
             builder.Services.AddHttpLogging(logging =>
             {
@@ -53,7 +55,7 @@ namespace RoomBookingApp
                 x.TokenValidationParameters = new Microsoft.IdentityModel.Tokens.TokenValidationParameters
                 {
                     ValidateIssuerSigningKey = true,
-                    IssuerSigningKey = new SymmetricSecurityKey(System.Text.Encoding.UTF8.GetBytes(builder.Configuration["Jwt"])),
+                    IssuerSigningKey = new SymmetricSecurityKey(System.Text.Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"])),
                     ValidateIssuer = false,
                     ValidateAudience = false,
                     ClockSkew = TimeSpan.Zero

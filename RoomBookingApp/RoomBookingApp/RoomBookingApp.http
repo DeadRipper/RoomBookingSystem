@@ -6,3 +6,5 @@ Content-Type: application/json
 
 {"roomId": 1}
 ###
+
+GET {{RoomBookingApp_HostAddress}}/api/Token/getToken
