@@ -9,7 +9,7 @@ using RBA.Models.Request.RoomBooking.UnbookRoom;
 using RBA.Models.States;
 using System.Text.Json;
 
-namespace RBA.DBase
+namespace RBA.DBase.Workers
 {
     public class RoomManagment(ICacheWorker cacheWorker, IDBWorker dbWorker, ILogger<RoomManagment> logger) : IRoomManagment
     {

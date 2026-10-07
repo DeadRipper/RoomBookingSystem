@@ -21,7 +21,7 @@ using System.Collections.Generic;
 using System.Runtime.Serialization.Formatters;
 using System.Text;
 
-namespace RBA.DBase
+namespace RBA.DBase.Workers
 {
     public class DBWorker(AppDbContext appDbContext, ILogger<DBWorker> logger) : IDBWorker
     {

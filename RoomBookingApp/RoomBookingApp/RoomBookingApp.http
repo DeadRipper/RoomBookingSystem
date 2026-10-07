@@ -6,3 +6,13 @@ Content-Type: application/json
 
 {"roomId": 1}
 ###
+
+GET {{RoomBookingApp_HostAddress}}/api/Token/getToken
+
+
+###
+POST {{RoomBookingApp_HostAddress}}/api/Admin/login
+Accept: application/json
+Content-Type: application/json
+
+{"UserName": "1", "Password": "1"}

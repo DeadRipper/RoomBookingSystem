@@ -1,10 +1,15 @@
 
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.HttpLogging;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
 using RBA.CacheBookings;
-using RBA.DBase;
 using RBA.DBase.DBRelations;
 using RBA.DBase.Managers;
+using RBA.DBase.Managers.Auth;
+using RBA.DBase.Workers;
+using RBA.DBase.Workers.AuthWorkers;
+using RoomBookingApp.Helpers;
 using RoomBookingApp.Middlewares;
 
 namespace RoomBookingApp
@@ -33,10 +38,31 @@ namespace RoomBookingApp
             builder.Services.AddSingleton<ICacheWorker, CBWorker>();
             builder.Services.AddScoped<IAdminManagment, AdminWorker>();
             builder.Services.AddScoped<IUserManagment, UserWorker>();
+            builder.Services.AddScoped<IAuthManager, AuthWorker>();
+            builder.Services.AddScoped<IDbAuthManager, DbAuthWorker>();
 
             builder.Services.AddHttpLogging(logging =>
             {
                 logging.LoggingFields = HttpLoggingFields.Request | HttpLoggingFields.Response;
+            });
+
+            builder.Services.AddAuthentication(cfg =>
+            {
+                cfg.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                cfg.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+                cfg.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
+            }).AddJwtBearer(x =>
+            {
+                x.RequireHttpsMetadata = false;
+                x.SaveToken = false;
+                x.TokenValidationParameters = new Microsoft.IdentityModel.Tokens.TokenValidationParameters
+                {
+                    ValidateIssuerSigningKey = true,
+                    IssuerSigningKey = new SymmetricSecurityKey(System.Text.Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"])),
+                    ValidateIssuer = false,
+                    ValidateAudience = false,
+                    ClockSkew = TimeSpan.Zero
+                };
             });
 
             var app = builder.Build();
@@ -53,6 +79,8 @@ namespace RoomBookingApp
             {
                 app.MapOpenApi();
             }
+
+            app.UseAuthentication();
 
             app.UseHttpsRedirection();            
 
