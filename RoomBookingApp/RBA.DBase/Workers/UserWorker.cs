@@ -7,7 +7,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace RBA.DBase
+namespace RBA.DBase.Workers
 {
     public class UserWorker(IDBWorker dBWorker) : IUserManagment
     {

@@ -4,9 +4,11 @@ using Microsoft.AspNetCore.HttpLogging;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using RBA.CacheBookings;
-using RBA.DBase;
 using RBA.DBase.DBRelations;
 using RBA.DBase.Managers;
+using RBA.DBase.Managers.Auth;
+using RBA.DBase.Workers;
+using RBA.DBase.Workers.AuthWorkers;
 using RoomBookingApp.Helpers;
 using RoomBookingApp.Middlewares;
 
@@ -36,7 +38,8 @@ namespace RoomBookingApp
             builder.Services.AddSingleton<ICacheWorker, CBWorker>();
             builder.Services.AddScoped<IAdminManagment, AdminWorker>();
             builder.Services.AddScoped<IUserManagment, UserWorker>();
-            builder.Services.AddScoped<TokenHelper>();
+            builder.Services.AddScoped<IAuthManager, AuthWorker>();
+            builder.Services.AddScoped<IDbAuthManager, DbAuthWorker>();
 
             builder.Services.AddHttpLogging(logging =>
             {
