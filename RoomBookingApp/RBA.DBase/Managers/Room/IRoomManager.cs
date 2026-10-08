@@ -7,9 +7,9 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace RBA.DBase.Managers
+namespace RBA.DBase.Managers.Room
 {
-    public interface IRoomManagment
+    public interface IRoomManager
     {
         Task<RoomState> CheckIfRoomIsAvailable(CheckRoomAvailableRequest checkRoomAvailableRequest);
         Task<BookState> BookRoom(BookRoomRequest bookRoomRequest);

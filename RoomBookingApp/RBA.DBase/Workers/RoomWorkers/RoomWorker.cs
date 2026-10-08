@@ -1,6 +1,7 @@
 ﻿using Microsoft.Extensions.Logging;
 using RBA.CacheBookings;
-using RBA.DBase.Managers;
+using RBA.DBase.Managers.DbWorker;
+using RBA.DBase.Managers.Room;
 using RBA.Models.Models;
 using RBA.Models.Request.RoomBooking.BookRoom;
 using RBA.Models.Request.RoomBooking.ChangeBookingSettings;
@@ -9,9 +10,9 @@ using RBA.Models.Request.RoomBooking.UnbookRoom;
 using RBA.Models.States;
 using System.Text.Json;
 
-namespace RBA.DBase.Workers
+namespace RBA.DBase.Workers.RoomWorkers
 {
-    public class RoomManagment(ICacheWorker cacheWorker, IDBWorker dbWorker, ILogger<RoomManagment> logger) : IRoomManagment
+    public class RoomWorker(ICacheWorker cacheWorker, IRoomDbManager dbWorker, ILogger<RoomWorker> logger) : IRoomManager
     {
         public async Task<string> GetAllRooms()
         {

@@ -8,7 +8,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace RBA.DBase.Managers
+namespace RBA.DBase.Managers.Admin
 {
     public interface IAdminManagment
     {

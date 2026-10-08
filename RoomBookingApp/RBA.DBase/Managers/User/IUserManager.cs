@@ -6,9 +6,9 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace RBA.DBase.Managers
+namespace RBA.DBase.Managers.User
 {
-    public interface IUserManagment
+    public interface IUserManager
     {
         Task<UserModel> GetUserById(GetUserByIdRequest request);
         Task<int> GetUserId(GetUserIdRequest request);

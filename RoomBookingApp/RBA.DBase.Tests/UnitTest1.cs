@@ -1,14 +1,14 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Moq;
 using RBA.DBase.DBRelations;
-using RBA.DBase.Managers;
+using RBA.DBase.Managers.DbWorker;
 
 namespace RBA.DBase.Tests
 {
     public class Tests
     {
         AppDbContext _appDbContext;
-        Mock<IDBWorker> _mockDBWorker;
+        Mock<IUserDBWorker> _mockDBWorker;
 
         [SetUp]
         public void Setup()

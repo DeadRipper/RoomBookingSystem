@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using RBA.DBase.Managers;
+using RBA.DBase.Managers.Admin;
 using RBA.Models.Request.Admin.Cancel;
 using RBA.Models.Request.Admin.Login;
 using RBA.Models.Request.Admin.Logout;
@@ -79,11 +79,5 @@ namespace RoomBookingApp.Controllers
         {
             return Ok(await _adminManagment.CancelBookingAsync(request));
         }
-
-        //[HttpPost("updateRoom")]
-        //public async Task<IActionResult> UpdateRoom([FromBody] NewRoomRequest request)
-        //{
-        //    return Ok(await _adminManagment.UpdateRoomAsync(request));
-        //}
     }
 }
