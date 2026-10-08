@@ -1,4 +1,5 @@
-﻿using RBA.DBase.Managers;
+﻿using RBA.DBase.Managers.Admin;
+using RBA.DBase.Managers.DbWorker;
 using RBA.Models.Models.RoomBookingModels;
 using RBA.Models.Request.Admin.Cancel;
 using RBA.Models.Request.Admin.Login;
@@ -9,9 +10,9 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace RBA.DBase.Workers
+namespace RBA.DBase.Workers.AdminWorkers
 {
-    public class AdminWorker(IDBWorker dbWorker) : IAdminManagment
+    public class AdminWorker(IAdminDbManager dbWorker) : IAdminManagment
     {
         public Task<bool> LoginAsync(LoginRequest request)
         {

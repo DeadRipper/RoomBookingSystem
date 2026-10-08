@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using RBA.DBase.Managers;
+using RBA.DBase.Managers.Room;
 using RBA.Models.Request.RoomBooking.BookRoom;
 using RBA.Models.Request.RoomBooking.ChangeBookingSettings;
 using RBA.Models.Request.RoomBooking.CheckRoomAvailable;
@@ -13,7 +13,7 @@ namespace RoomBookingApp.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class RoomBookingController(IRoomManagment _roomManagment) : ControllerBase
+    public class RoomBookingController(IRoomManager _roomManagment) : ControllerBase
     {
         [Authorize]
         [HttpPost("getAllrooms")]

@@ -5,10 +5,15 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using RBA.CacheBookings;
 using RBA.DBase.DBRelations;
-using RBA.DBase.Managers;
+using RBA.DBase.Managers.Admin;
 using RBA.DBase.Managers.Auth;
-using RBA.DBase.Workers;
+using RBA.DBase.Managers.DbWorker;
+using RBA.DBase.Managers.Room;
+using RBA.DBase.Managers.User;
+using RBA.DBase.Workers.AdminWorkers;
 using RBA.DBase.Workers.AuthWorkers;
+using RBA.DBase.Workers.RoomWorkers;
+using RBA.DBase.Workers.UserWorkers;
 using RoomBookingApp.Helpers;
 using RoomBookingApp.Middlewares;
 
@@ -33,13 +38,18 @@ namespace RoomBookingApp
                 options.UseSqlServer(connectionString);
             });
 
-            builder.Services.AddScoped<IRoomManagment, RoomManagment>();
-            builder.Services.AddScoped<IDBWorker, DBWorker>();
             builder.Services.AddSingleton<ICacheWorker, CBWorker>();
-            builder.Services.AddScoped<IAdminManagment, AdminWorker>();
-            builder.Services.AddScoped<IUserManagment, UserWorker>();
-            builder.Services.AddScoped<IAuthManager, AuthWorker>();
-            builder.Services.AddScoped<IDbAuthManager, DbAuthWorker>();
+
+            builder.Services.AddTransient<IRoomManager, RoomWorker>();
+            builder.Services.AddTransient<IAdminManagment, AdminWorker>();
+            builder.Services.AddTransient<IUserManager, UserWorker>();
+            builder.Services.AddTransient<IAuthManager, AuthWorker>();
+
+            builder.Services.AddTransient<IRoomDbManager, RoomDbWorker>();
+            builder.Services.AddTransient<IDbAuthManager, DbAuthWorker>();
+            builder.Services.AddTransient<IUserDBWorker, UserDbWorker>();
+            builder.Services.AddTransient<IAdminDbManager, AdminDbWorker>();
+
 
             builder.Services.AddHttpLogging(logging =>
             {

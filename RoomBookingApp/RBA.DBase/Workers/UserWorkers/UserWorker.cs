@@ -1,4 +1,5 @@
-﻿using RBA.DBase.Managers;
+﻿using RBA.DBase.Managers.DbWorker;
+using RBA.DBase.Managers.User;
 using RBA.Models.Models.RoomBookingModels;
 using RBA.Models.Request.User.GetUserById;
 using RBA.Models.Request.User.GetUserId;
@@ -7,9 +8,9 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace RBA.DBase.Workers
+namespace RBA.DBase.Workers.UserWorkers
 {
-    public class UserWorker(IDBWorker dBWorker) : IUserManagment
+    public class UserWorker(IUserDBWorker dBWorker) : IUserManager
     {
         public async Task<bool> RegistrateUserAsync(RegistrationRequest request)
         {

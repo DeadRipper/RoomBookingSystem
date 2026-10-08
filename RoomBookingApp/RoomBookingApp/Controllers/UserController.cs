@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using RBA.DBase.Managers;
+using RBA.DBase.Managers.User;
 using RBA.Models.Request.User.GetUserById;
 using RBA.Models.Request.User.GetUserId;
 using RBA.Models.Request.User.Registration;
@@ -10,7 +10,7 @@ namespace RoomBookingApp.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class UserController(IUserManagment userManagment) : ControllerBase
+    public class UserController(IUserManager userManagment) : ControllerBase
     {
         [Authorize]
         [HttpPost("getUserId")]
