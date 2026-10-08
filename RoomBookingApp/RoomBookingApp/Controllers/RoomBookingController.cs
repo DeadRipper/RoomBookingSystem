@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using RBA.DBase.Managers;
 using RBA.Models.Request.RoomBooking.BookRoom;
@@ -14,12 +15,14 @@ namespace RoomBookingApp.Controllers
     [ApiController]
     public class RoomBookingController(IRoomManagment _roomManagment) : ControllerBase
     {
+        [Authorize]
         [HttpPost("getAllrooms")]
         public async Task<IActionResult> RoomInfo()
         {
             return Ok(await _roomManagment.GetAllRooms() ?? "no rooms");
         }
 
+        [Authorize]
         [HttpPost("bookRoom")]
         public async Task<IActionResult> BookRoom([FromBody] BookRoomRequest request)
         {
@@ -31,6 +34,7 @@ namespace RoomBookingApp.Controllers
             });
         }
 
+        [Authorize]
         [HttpPost("unbookRoom")]
         public async Task<IActionResult> UnbookRoom([FromBody] UnbookRoomRequest request)
         {
@@ -42,12 +46,14 @@ namespace RoomBookingApp.Controllers
             });
         }
 
+        [Authorize]
         [HttpPost("changeBookingSettings")]
         public async Task<IActionResult> ChangeBookingSettings([FromBody] ChangeBookingSettingsRequest request)
         {
             return Ok(_roomManagment.ChangeBookingSettings(request));
         }
 
+        [Authorize]
         [HttpPost("checkAvailable")]
         public async Task<IActionResult> CheckAvailable([FromBody] CheckRoomAvailableRequest request)
         {

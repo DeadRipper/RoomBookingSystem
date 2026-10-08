@@ -79,11 +79,5 @@ namespace RoomBookingApp.Controllers
         {
             return Ok(await _adminManagment.CancelBookingAsync(request));
         }
-
-        //[HttpPost("updateRoom")]
-        //public async Task<IActionResult> UpdateRoom([FromBody] NewRoomRequest request)
-        //{
-        //    return Ok(await _adminManagment.UpdateRoomAsync(request));
-        //}
     }
 }
