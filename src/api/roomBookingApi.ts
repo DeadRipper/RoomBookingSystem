@@ -1,5 +1,30 @@
 import type { Room } from "../types";
 
+// Backend now guards most endpoints with [Authorize] (JWT bearer). The token is
+// anonymous - GET /api/Token/getToken -> { token } (camelCase, 120 min lifetime),
+// not tied to a user - so we fetch one lazily, cache it, and refetch once on a 401.
+const TOKEN_URL = "/api/Token/getToken";
+let cachedToken: Promise<string> | null = null;
+
+function getToken(): Promise<string> {
+  cachedToken ??= fetch(TOKEN_URL)
+    .then(async (r) => {
+      if (!r.ok) throw new Error(`token request failed: ${r.status}`);
+      return ((await r.json()) as { token: string }).token;
+    })
+    .catch((err) => {
+      cachedToken = null; // don't cache failures
+      throw err;
+    });
+  return cachedToken;
+}
+
+async function withAuth(init: RequestInit): Promise<RequestInit> {
+  const headers = new Headers(init.headers);
+  headers.set("Authorization", `Bearer ${await getToken()}`);
+  return { ...init, headers };
+}
+
 // Wraps fetch with console logging of the request and the response (status and
 // body), so 4xx/5xx errors - e.g. a 400 model-validation failure from ASP.NET,
 // whose body lists the offending fields - are visible in the browser console.
@@ -12,7 +37,12 @@ async function loggedFetch(url: string, init: RequestInit = {}): Promise<Respons
   const started = performance.now();
   let response: Response;
   try {
-    response = await fetch(url, init);
+    response = await fetch(url, await withAuth(init));
+    if (response.status === 401) {
+      // Token expired or backend restarted with a new key: get a fresh one and retry once.
+      cachedToken = null;
+      response = await fetch(url, await withAuth(init));
+    }
   } catch (err) {
     console.error(`${label} -> network error (no response)`, err);
     throw err;
