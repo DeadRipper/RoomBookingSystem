@@ -8,17 +8,17 @@ namespace RoomBookingApp.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class TokenController(IConfiguration configuration, IAuthManager authManager) : ControllerBase
+    public class TokenController(IAuthManager authManager) : ControllerBase
     {
         [AllowAnonymous]
         [HttpGet("getToken")]
-        public async Task<IActionResult> GenerateToken()
+        public async Task<IActionResult> GetToken()
         {
-            var tokenRes = await authManager.GenerateToken();
+            var tokenRes = await authManager.GetToken();
             return Ok(new
             {
                 token = tokenRes.Token,
-                exparationDate = tokenRes.ExparationDate
+                expirationDate = tokenRes.ExpirationDate
             });
         }
     }
