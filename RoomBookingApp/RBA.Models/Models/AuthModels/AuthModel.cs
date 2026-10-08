@@ -8,6 +8,7 @@ namespace RBA.Models.Models.AuthModels
     {
         public int Id { get; set; }
         public string Token { get; set; }
-        public DateTime ExparationDate { get; set; }
+        public DateTime ExpirationDate { get; set; }
+        public DateTime CreationDate { get; set; }
     }
 }

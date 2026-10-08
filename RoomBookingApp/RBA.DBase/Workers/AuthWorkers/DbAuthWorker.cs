@@ -21,23 +21,19 @@ namespace RBA.DBase.Workers.AuthWorkers
             var token = new JwtSecurityToken(configuration["Jwt:Issuer"],
               configuration["Jwt:Issuer"],
               null,
-              expires: DateTime.Now.AddMinutes(120),
+              expires: DateTime.UtcNow.AddMinutes(120),
               signingCredentials: credentials);
 
             var authResp = new AuthModel
             {
                 Token = new JwtSecurityTokenHandler().WriteToken(token),
-                ExparationDate = token.ValidTo
+                ExpirationDate = token.ValidTo,
+                CreationDate = DateTime.UtcNow
             };
 
             appDbContext.Auths.Add(authResp);
             await appDbContext.SaveChangesAsync();
             return authResp;
-        }
-
-        public async Task<AuthModel> RefreshToken(DateTime experationDate)
-        {
-            throw new NotImplementedException();
         }
     }
 }

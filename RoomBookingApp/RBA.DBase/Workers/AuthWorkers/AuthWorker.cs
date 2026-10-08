@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.Logging;
+﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 using RBA.DBase.DBRelations;
 using RBA.DBase.Managers.Auth;
 using RBA.Models.Models.AuthModels;
@@ -15,9 +16,13 @@ namespace RBA.DBase.Workers.AuthWorkers
             return await dbAuthManager.GenerateToken();
         }
 
-        public async Task<AuthModel> RefreshToken(DateTime experationDate)
+        public async Task<AuthModel> GetToken()
         {
-            return await dbAuthManager.RefreshToken(experationDate);
+            var token = await appDbContext.Auths.FirstOrDefaultAsync();
+            if (token == null || token.ExpirationDate < DateTime.UtcNow)
+                return await GenerateToken();
+            else
+                return token;
         }
     }
 }

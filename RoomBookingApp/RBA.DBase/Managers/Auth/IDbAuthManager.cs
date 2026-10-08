@@ -8,6 +8,5 @@ namespace RBA.DBase.Managers.Auth
     public interface IDbAuthManager
     {
         Task<AuthModel> GenerateToken();
-        Task<AuthModel> RefreshToken(DateTime experationDate);
     }
 }
