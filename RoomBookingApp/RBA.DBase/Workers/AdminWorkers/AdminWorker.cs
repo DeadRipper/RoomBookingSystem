@@ -15,74 +15,74 @@ namespace RBA.DBase.Workers.AdminWorkers
 {
     public class AdminWorker(IAdminDbManager dbWorker, ILogger<AdminWorker> logger) : IAdminManagment
     {
-        public Task<bool> LoginAsync(LoginRequest request)
+        public async Task<bool> LoginAsync(LoginRequest request)
         {
             logger.LogInformation("AdminWorker: LoginAsync called with UserName: {UserName}", request.UserName);
-            var result =  dbWorker.LoginAsync(request);
+            var result = await dbWorker.LoginAsync(request);
             logger.LogInformation("AdminWorker: LoginAsync completed with result: {Result}", result);
             return result;
         }
 
-        public Task<bool> LogoutAsync(LogoutRequest request)
+        public async Task<bool> LogoutAsync(LogoutRequest request)
         {
             logger.LogInformation("AdminWorker: LogoutAsync called");
-            var result = dbWorker.LogoutAsync(request);
+            var result = await dbWorker.LogoutAsync(request);
             logger.LogInformation("AdminWorker: LogoutAsync completed with result: {Result}", result);
             return result;
         }
 
-        public Task<RoomModel> InsertNewRoom(NewRoomRequest roomRequest)
+        public async Task<RoomModel> InsertNewRoom(NewRoomRequest roomRequest)
         {
             logger.LogInformation("AdminWorker: InsertNewRoom called with RoomName: {RoomName}", roomRequest.Name);
-            var result = dbWorker.InsertNewRoom(roomRequest);
+            var result = await dbWorker.InsertNewRoom(roomRequest);
             logger.LogInformation("AdminWorker: InsertNewRoom completed with result: {Result}", result);
             return result;
         }
 
-        public Task<List<AmenityModel>> GetRoomConfigs()
+        public async Task<List<AmenityModel>> GetRoomConfigs()
         {
             logger.LogInformation("AdminWorker: GetRoomConfigs called");
-            var result = dbWorker.GetRoomConfigs();
+            var result = await dbWorker.GetRoomConfigs();
             logger.LogInformation("AdminWorker: GetRoomConfigs completed with result: {Result}", result);
             return result;
         }
 
-        public Task<int> GetTotalBookings()
+        public async Task<int> GetTotalBookings()
         {
             logger.LogInformation("AdminWorker: GetTotalBookings called");
-            var result = dbWorker.GetTotalBookings();
+            var result = await dbWorker.GetTotalBookings();
             logger.LogInformation("AdminWorker: GetTotalBookings completed with result: {Result}", result);
             return result;
         }
 
-        public Task<int> GetTodayBookings()
+        public async Task<int> GetTodayBookings()
         {
             logger.LogInformation("AdminWorker: GetTodayBookings called");
-            var result = dbWorker.GetTodayBookings();
+            var result = await dbWorker.GetTodayBookings();
             logger.LogInformation("AdminWorker: GetTodayBookings completed with result: {Result}", result);
             return result;
         }
 
-        public Task<int> GetAllRoomsCount()
+        public async Task<int> GetAllRoomsCount()
         {
             logger.LogInformation("AdminWorker: GetAllRoomsCount called");
-            var result = dbWorker.GetAllRoomsCount();
+            var result = await dbWorker.GetAllRoomsCount();
             logger.LogInformation("AdminWorker: GetAllRoomsCount completed with result: {Result}", result);
             return result;
         }
 
-        public Task<List<ReservationModel>> GetAllReservations()
+        public async Task<List<ReservationModel>> GetAllReservations()
         {
             logger.LogInformation("AdminWorker: GetAllReservations called");
-            var result = dbWorker.GetAllReservations();
+            var result = await dbWorker.GetAllReservations();
             logger.LogInformation("AdminWorker: GetAllReservations completed with result: {Result}", result);
             return result;
         }
 
-        public Task<bool> CancelBookingAsync(CancelBookingRequest request)
+        public async Task<bool> CancelBookingAsync(CancelBookingRequest request)
         {
             logger.LogInformation("AdminWorker: CancelBookingAsync called");
-            var result = dbWorker.CancelBookingAsync(request);
+            var result = await dbWorker.CancelBookingAsync(request);
             logger.LogInformation("AdminWorker: CancelBookingAsync completed with result: {Result}", result);
             return result;
         }
