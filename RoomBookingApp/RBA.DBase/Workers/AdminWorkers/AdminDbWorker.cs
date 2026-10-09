@@ -65,7 +65,6 @@ namespace RBA.DBase.Workers.AdminWorkers
                 Capacity = request.Capacity,
                 Amenities = await appDbContext.Amenities.FirstOrDefaultAsync(x => x.Id == request.Amenities.Id) ?? new AmenityModel(),
                 Image = request.Image,
-                RoomState = RoomState.Available,
                 ReservationsId = new List<int>()
             };
             appDbContext.Rooms.Add(newRoom);
