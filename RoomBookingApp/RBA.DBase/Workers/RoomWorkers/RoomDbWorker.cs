@@ -31,10 +31,8 @@ namespace RBA.DBase.Workers.RoomWorkers
             try
             {
                 room = appDbContext?.Rooms?.Where(x => x.Id == bookRoomRequest.RoomId)?.FirstOrDefault();
-                var reserv = appDbContext.Reservations.Where(r => r.RoomId == bookRoomRequest.RoomId).Select(r => r.Date)?.FirstOrDefault();
-                if (room == null 
-                    || 
-                    (reserv != null && reserv == bookRoomRequest.BookingDate))
+                var reserv = appDbContext?.Reservations.Any(r => r.Date == bookRoomRequest.BookingDate);
+                if ((room == null || !reserv.HasValue) && reserv.Value)
                     return BookState.Failed;
             }
             catch
