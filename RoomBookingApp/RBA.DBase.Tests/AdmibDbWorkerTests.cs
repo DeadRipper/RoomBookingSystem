@@ -46,7 +46,8 @@ namespace RBA.DBase.Tests
         public async Task Check_new_insert_incorrect_amenty_not_create_new_room(NewRoomRequest request)
         {
             using var context = new AppDbContext(_contextOptions);
-            Assert.Catch(() => new AdminDbWorker(context, loggerMock.Object).InsertNewRoom(request).GetAwaiter().GetResult(), It.IsAny<string>());
+            var result = await new AdminDbWorker(context, loggerMock.Object).InsertNewRoom(request);
+            Assert.That(result, Is.Null);
         }
 
         public static IEnumerable<NewRoomRequest> ValidInsertNewRoomRequests()
