@@ -78,7 +78,22 @@ namespace RBA.DBase.Workers.RoomWorkers
 
         public async Task<BookState> UnbookingRoom(UnbookRoomRequest unbookRoomRequest)
         {
-            var reservation = await appDbContext.Reservations?.Where(r => r.Id == unbookRoomRequest.ReservationId)?.FirstOrDefaultAsync();
+            if (unbookRoomRequest.ReservationId <= 0)
+            {
+                logger.LogError("Invalid reservation ID while attempting to unbook room.");
+                return BookState.Failed;
+            }
+
+            ReservationModel reservation;
+
+            if (unbookRoomRequest.RoomId != 0 || unbookRoomRequest.RoomId != null)
+            {
+                reservation = await appDbContext.Reservations?.Where(r => r.Id == unbookRoomRequest.ReservationId && r.RoomId == unbookRoomRequest.RoomId)?.FirstOrDefaultAsync();
+            }
+            else
+            {
+                reservation = await appDbContext.Reservations?.Where(r => r.Id == unbookRoomRequest.ReservationId)?.FirstOrDefaultAsync();
+            }
 
             if (reservation == null)
             {

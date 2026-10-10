@@ -43,9 +43,9 @@ namespace RBA.DBase.Workers.RoomWorkers
 
         public async Task<BookState> UnbookRoom(UnbookRoomRequest unbookRoomRequest)
         {
-            logger.LogInformation("Attempting to unbook room ID: {ReservationId}", unbookRoomRequest.ReservationId);
+            logger.LogInformation("Attempting to unbook reservation ID: {ReservationId}", unbookRoomRequest.ReservationId);
             BookState roomState = await dbWorker.UnbookingRoom(unbookRoomRequest);
-            logger.LogInformation("End unbooking for room ID: {ReservationId}; Status: {roomState}", unbookRoomRequest.ReservationId, roomState);
+            logger.LogInformation("End unbooking for reservation ID: {ReservationId}; Status: {roomState}", unbookRoomRequest.ReservationId, roomState);
             return roomState;
         }
 
