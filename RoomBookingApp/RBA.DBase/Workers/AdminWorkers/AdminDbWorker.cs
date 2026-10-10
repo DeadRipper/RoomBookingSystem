@@ -66,7 +66,7 @@ namespace RBA.DBase.Workers.AdminWorkers
             if (getAmenity == null)
             {
                 logger.LogWarning($"Insert new room attempt failed for Room Name: {request.Name}");
-                throw new Exception($"Amenity with ID {request.Amenities.Id} not found.");
+                return null;
             }
 
             var newRoom = new RoomModel
