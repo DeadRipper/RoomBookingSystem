@@ -10,7 +10,7 @@ using RBA.Models.States;
 
 namespace RBA.DBase.Tests
 {
-    public class Tests
+    public class RoomDbWorkerTests
     {
         private DbContextOptions<AppDbContext> _contextOptions;
         private Mock<ILogger<RoomDbWorker>> loggerMock;
