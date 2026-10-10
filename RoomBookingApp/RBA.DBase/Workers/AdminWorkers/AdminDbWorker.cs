@@ -8,6 +8,7 @@ using RBA.Models.Request.Admin.Cancel;
 using RBA.Models.Request.Admin.Login;
 using RBA.Models.Request.Admin.Logout;
 using RBA.Models.Request.Admin.NewRoom;
+using RBA.Models.Request.RoomBooking.UnbookRoom;
 using RBA.Models.States;
 using System;
 using System.Collections.Generic;
@@ -26,6 +27,8 @@ namespace RBA.DBase.Workers.AdminWorkers
                 return false;
             }
 
+            var room = await appDbContext.Rooms.FirstOrDefaultAsync(r => r.ReservationsId.Contains(reservation.Id));
+            room?.ReservationsId.Remove(reservation.Id);
             appDbContext.Reservations.Remove(reservation);
             await appDbContext.SaveChangesAsync();
             return true;
@@ -65,7 +68,6 @@ namespace RBA.DBase.Workers.AdminWorkers
                 Capacity = request.Capacity,
                 Amenities = await appDbContext.Amenities.FirstOrDefaultAsync(x => x.Id == request.Amenities.Id) ?? new AmenityModel(),
                 Image = request.Image,
-                RoomState = RoomState.Available,
                 ReservationsId = new List<int>()
             };
             appDbContext.Rooms.Add(newRoom);
