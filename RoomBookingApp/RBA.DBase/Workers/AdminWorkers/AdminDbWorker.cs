@@ -27,8 +27,8 @@ namespace RBA.DBase.Workers.AdminWorkers
                 return false;
             }
 
-            var room = await appDbContext.Rooms.FirstOrDefaultAsync(r => r.ReservationsId.Contains(reservation.Id));
-            room?.ReservationsId.Remove(reservation.Id);
+            var room = await appDbContext.Rooms.FirstOrDefaultAsync(r => r.ReservationsId != null && r.ReservationsId.Contains(reservation.Id));
+            room?.ReservationsId?.Remove(reservation.Id);
             appDbContext.Reservations.Remove(reservation);
             await appDbContext.SaveChangesAsync();
             return true;
