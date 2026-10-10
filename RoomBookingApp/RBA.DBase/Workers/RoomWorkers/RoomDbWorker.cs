@@ -32,7 +32,7 @@ namespace RBA.DBase.Workers.RoomWorkers
             {
                 room = appDbContext?.Rooms?.Where(x => x.Id == bookRoomRequest.RoomId)?.FirstOrDefault();
                 var reserv = appDbContext?.Reservations.Where(r => r.Date == bookRoomRequest.BookingDate && r.RoomId == bookRoomRequest.RoomId)?.FirstOrDefault();
-                if (room == null || reserv == null)
+                if (room == null || reserv != null)
                     return BookState.Failed;
             }
             catch
