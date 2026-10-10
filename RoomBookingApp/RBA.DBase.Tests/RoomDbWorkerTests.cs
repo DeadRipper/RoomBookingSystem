@@ -49,57 +49,42 @@ namespace RBA.DBase.Tests
             loggerMock = new Mock<ILogger<RoomDbWorker>>();
         }
 
-        [Test, TestCaseSource(nameof(GetTestBookingRequests))]
-        public async Task Check_success_booking_room(BookRoomRequest request, BookState bookState)
+        [Test, TestCaseSource(nameof(ValidBookingRequests))]
+        public async Task Check_success_booking_room(BookRoomRequest request)
         {
             using var context = new AppDbContext(_contextOptions);
             var result = await new RoomDbWorker(context, loggerMock.Object).BookingRoom(request);
-            Assert.That(result, Is.EqualTo(bookState));
+            Assert.That(result, Is.EqualTo(BookState.Confirmed));
         }
 
-        [Test, TestCaseSource(nameof(GetTestBookingRequests))]
-        public async Task Check_double_booking_room_and_first_room_already_booked(BookRoomRequest request, BookState bookState)
+        [Test, TestCaseSource(nameof(ValidBookingRequests))]
+        public async Task Check_double_booking_returns_failed(BookRoomRequest request)
         {
             using var context = new AppDbContext(_contextOptions);
-            //first booking should be successful
-            var result1 = await new RoomDbWorker(context, loggerMock.Object).BookingRoom(request);
-            //second booking should fail as the room is already booked
+            await new RoomDbWorker(context, loggerMock.Object).BookingRoom(request);
             using var context2 = new AppDbContext(_contextOptions);
-            var result2 = await new RoomDbWorker(context2, loggerMock.Object).BookingRoom(request);
-            Assert.That(result1, Is.EqualTo(bookState));
-            Assert.That(result2, Is.EqualTo(bookState));
+            var result = await new RoomDbWorker(context2, loggerMock.Object).BookingRoom(request);
+            Assert.That(result, Is.EqualTo(BookState.Failed));
         }
 
-        [Test, TestCaseSource(nameof(GetTestBookingRequests))]
-        public async Task Check_failed_no_user(BookRoomRequest request, BookState bookState)
+        [Test, TestCaseSource(nameof(InvalidBookingRequests))]
+        public async Task Check_invalid_booking_returns_failed(BookRoomRequest request)
         {
             using var context = new AppDbContext(_contextOptions);
             var result = await new RoomDbWorker(context, loggerMock.Object).BookingRoom(request);
-            Assert.That(result, Is.EqualTo(bookState));
+            Assert.That(result, Is.EqualTo(BookState.Failed));
         }
 
-        #region [GetTestBookingRequests fill request data]
-        public static IEnumerable<TestCaseData> GetTestBookingRequests()
+        #region [Test request fixtures]
+        public static IEnumerable<BookRoomRequest> ValidBookingRequests()
         {
-            yield return new TestCaseData(
-                new BookRoomRequest { RoomId = 1, UserId = 1, BookingDate = DateTime.Parse("2024-01-01T09:00:00"), MeetingTitle = "Meeting" },
-                BookState.Confirmed
-            ).SetName("Valid booking returns Confirmed");
+            yield return new BookRoomRequest { RoomId = 1, UserId = 1, BookingDate = DateTime.Parse("2024-01-01T09:00:00"), MeetingTitle = "Meeting" };
+        }
 
-            yield return new TestCaseData(
-                new BookRoomRequest { RoomId = 1, UserId = 1, BookingDate = DateTime.Parse("2024-01-01T09:00:00"), MeetingTitle = "Meeting" },
-                BookState.Failed
-            ).SetName("Valid booking returns Failed");
-
-            yield return new TestCaseData(
-                new BookRoomRequest { RoomId = 999, UserId = 1, BookingDate = DateTime.Parse("2024-01-01T09:00:00"), MeetingTitle = "Meeting" },
-                BookState.Failed
-            ).SetName("Unknown room returns Failed");
-
-            yield return new TestCaseData(
-                new BookRoomRequest { RoomId = 1, UserId = 999, BookingDate = DateTime.Parse("2024-01-01T09:00:00"), MeetingTitle = "Meeting" },
-                BookState.Failed
-            ).SetName("Unknown user returns Failed");
+        public static IEnumerable<BookRoomRequest> InvalidBookingRequests()
+        {
+            yield return new BookRoomRequest { RoomId = 999, UserId = 1, BookingDate = DateTime.Parse("2024-01-01T09:00:00"), MeetingTitle = "Meeting" };
+            yield return new BookRoomRequest { RoomId = 1, UserId = 999, BookingDate = DateTime.Parse("2024-01-01T09:00:00"), MeetingTitle = "Meeting" };
         }
         #endregion
     }
