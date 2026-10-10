@@ -7,7 +7,6 @@ namespace RBA.Models.Request.RoomBooking.UnbookRoom
 {
     public class UnbookRoomResponse : ResponseBase
     {
-        public int RoomId { get; set; }
         public BookState BookState { get; set; }
     }
 }

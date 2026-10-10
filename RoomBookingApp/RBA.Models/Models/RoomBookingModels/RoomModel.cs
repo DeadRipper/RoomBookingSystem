@@ -14,6 +14,5 @@ namespace RBA.Models.Models.RoomBookingModels
         public int Capacity { get; set; }
         public AmenityModel Amenities { get; set; }
         public string Image { get; set; }
-        public List<int>? ReservationsId { get; set; }
     }
 }

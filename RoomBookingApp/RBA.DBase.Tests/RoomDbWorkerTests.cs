@@ -33,8 +33,7 @@ namespace RBA.DBase.Tests
                     Id = 1,
                     Name = string.Empty
                 },
-                Floor = 1,
-                ReservationsId = null,
+                Floor = 1
             };
             var userModel = new UserModel
             {
@@ -96,7 +95,6 @@ namespace RBA.DBase.Tests
                 UserId = 1,
                 MeetingTitle = "Test Meeting"
             });
-            context.Rooms.First(r => r.Id == request.RoomId).ReservationsId?.Add(1);
             context.SaveChanges();
 
             // Context 2 — act (fresh, like a real HTTP request would get)

@@ -78,36 +78,15 @@ namespace RBA.DBase.Workers.RoomWorkers
 
         public async Task<BookState> UnbookingRoom(UnbookRoomRequest unbookRoomRequest)
         {
-            RoomModel room;
-            ReservationModel reservationModel;
-            try
-            {
-                room = appDbContext.Rooms.Where(x => x.Id == unbookRoomRequest.RoomId)?.FirstOrDefault();
-                if (room == null)
-                    return BookState.Failed;
-            }
-            catch
-            {
-                logger.LogError($"Error while unbooking room for Room ID: {unbookRoomRequest.RoomId}");
-                throw;
-            }
+            var reservation = await appDbContext.Reservations?.Where(r => r.Id == unbookRoomRequest.ReservationId)?.FirstOrDefaultAsync();
 
-            if (room.ReservationsId != null)
+            if (reservation == null)
             {
-                reservationModel = appDbContext.Reservations?.FirstOrDefault(r => r.Id == unbookRoomRequest.ReservationId);
-                if (reservationModel == null)
-                {
-                    return BookState.Failed;
-                }   
-            }
-            else
-            {
+                logger.LogError($"Reservation with ID: {unbookRoomRequest.ReservationId} not found while unbooking room.");
                 return BookState.Failed;
             }
 
-            appDbContext.Rooms.Where(x => x.Id == unbookRoomRequest.RoomId)?.FirstOrDefault()?.ReservationsId?.Remove(unbookRoomRequest.ReservationId);
-            appDbContext.Reservations?.Remove(reservationModel);
-
+            appDbContext.Reservations.Remove(reservation);
             await appDbContext.SaveChangesAsync();
             return BookState.Cancelled;
         }
