@@ -69,19 +69,33 @@ namespace RBA.DBase.Tests
             Assert.That(result, Is.EqualTo(BookState.Failed));
         }
 
+        [Test, TestCaseSource(nameof(GetTestBookingRequests))]
+        public async Task Check_failed_no_user(BookRoomRequest request)
+        {
+            using var context = new AppDbContext(_contextOptions);
+            var result = await new RoomDbWorker(context, loggerMock.Object).BookingRoom(request);
+            Assert.That(result, Is.EqualTo(BookState.Failed));
+        }
+
+        #region [GetTestBookingRequests fill request data]
         public static IEnumerable<BookRoomRequest> GetTestBookingRequests()
         {
-            return new List<BookRoomRequest>
+            yield return new BookRoomRequest
             {
-                new BookRoomRequest
-                {
-                    RoomId = 1,
-                    BookingDate = DateTime.Parse("2024-01-01T09:00:00"),
-                    MeetingTitle = "Test Meeting",
-                    UserId = 1,
-                    UserName = "Test User"
-                }
+                RoomId = 1,
+                BookingDate = DateTime.Parse("2024-01-01T09:00:00"),
+                MeetingTitle = "Test Meeting",
+                UserId = 1,
+                UserName = "Test User"
+            };
+            yield return new BookRoomRequest
+            {
+                RoomId = 1,
+                BookingDate = DateTime.Parse("2024-01-01T09:00:00"),
+                MeetingTitle = "Test Meeting",
+                UserName = "Test User"
             };
         }
+        #endregion
     }
 }
