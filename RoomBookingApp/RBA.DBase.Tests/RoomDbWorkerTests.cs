@@ -33,7 +33,7 @@ namespace RBA.DBase.Tests
                     Name = string.Empty
                 },
                 Floor = 1,
-                ReservationsId = new List<int>(),
+                ReservationsId = null,
             };
             var userModel = new UserModel
             {

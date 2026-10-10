@@ -1,6 +1,7 @@
 ﻿using RBA.Models.States;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Text;
 
 namespace RBA.Models.Models.RoomBookingModels
@@ -13,6 +14,6 @@ namespace RBA.Models.Models.RoomBookingModels
         public int Capacity { get; set; }
         public AmenityModel Amenities { get; set; }
         public string Image { get; set; }
-        public List<int> ReservationsId { get; set; }
+        public List<int>? ReservationsId { get; set; }
     }
 }

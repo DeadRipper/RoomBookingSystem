@@ -76,7 +76,7 @@ namespace RBA.DBase.Workers.AdminWorkers
                 Capacity = request.Capacity,
                 Amenities = getAmenity,
                 Image = request.Image,
-                ReservationsId = new List<int>()
+                ReservationsId = null
             };
             appDbContext.Rooms.Add(newRoom);
             await appDbContext.SaveChangesAsync();
