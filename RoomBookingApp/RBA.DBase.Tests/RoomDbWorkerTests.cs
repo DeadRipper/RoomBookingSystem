@@ -50,51 +50,56 @@ namespace RBA.DBase.Tests
         }
 
         [Test, TestCaseSource(nameof(GetTestBookingRequests))]
-        public async Task Check_success_booking_room(BookRoomRequest request)
+        public async Task Check_success_booking_room(BookRoomRequest request, BookState bookState)
         {
             using var context = new AppDbContext(_contextOptions);
             var result = await new RoomDbWorker(context, loggerMock.Object).BookingRoom(request);
-            Assert.That(result, Is.EqualTo(BookState.Confirmed));
+            Assert.That(result, Is.EqualTo(bookState));
         }
 
         [Test, TestCaseSource(nameof(GetTestBookingRequests))]
-        public async Task Check_double_booking_room_and_first_room_already_booked(BookRoomRequest request)
+        public async Task Check_double_booking_room_and_first_room_already_booked(BookRoomRequest request, BookState bookState)
         {
             using var context = new AppDbContext(_contextOptions);
             //first booking should be successful
-            await new RoomDbWorker(context, loggerMock.Object).BookingRoom(request);
+            var result1 = await new RoomDbWorker(context, loggerMock.Object).BookingRoom(request);
             //second booking should fail as the room is already booked
             using var context2 = new AppDbContext(_contextOptions);
-            var result = await new RoomDbWorker(context2, loggerMock.Object).BookingRoom(request);
-            Assert.That(result, Is.EqualTo(BookState.Failed));
+            var result2 = await new RoomDbWorker(context2, loggerMock.Object).BookingRoom(request);
+            Assert.That(result1, Is.EqualTo(bookState));
+            Assert.That(result2, Is.EqualTo(bookState));
         }
 
         [Test, TestCaseSource(nameof(GetTestBookingRequests))]
-        public async Task Check_failed_no_user(BookRoomRequest request)
+        public async Task Check_failed_no_user(BookRoomRequest request, BookState bookState)
         {
             using var context = new AppDbContext(_contextOptions);
             var result = await new RoomDbWorker(context, loggerMock.Object).BookingRoom(request);
-            Assert.That(result, Is.EqualTo(BookState.Failed));
+            Assert.That(result, Is.EqualTo(bookState));
         }
 
         #region [GetTestBookingRequests fill request data]
-        public static IEnumerable<BookRoomRequest> GetTestBookingRequests()
+        public static IEnumerable<TestCaseData> GetTestBookingRequests()
         {
-            yield return new BookRoomRequest
-            {
-                RoomId = 1,
-                BookingDate = DateTime.Parse("2024-01-01T09:00:00"),
-                MeetingTitle = "Test Meeting",
-                UserId = 1,
-                UserName = "Test User"
-            };
-            yield return new BookRoomRequest
-            {
-                RoomId = 1,
-                BookingDate = DateTime.Parse("2024-01-01T09:00:00"),
-                MeetingTitle = "Test Meeting",
-                UserName = "Test User"
-            };
+            yield return new TestCaseData(
+                new BookRoomRequest { RoomId = 1, UserId = 1, BookingDate = DateTime.Parse("2024-01-01T09:00:00"), MeetingTitle = "Meeting" },
+                BookState.Confirmed
+            ).SetName("Valid booking returns Confirmed");
+
+            yield return new TestCaseData(
+                new BookRoomRequest { RoomId = 1, UserId = 1, BookingDate = DateTime.Parse("2024-01-01T09:00:00"), MeetingTitle = "Meeting" },
+                BookState.Failed
+            ).SetName("Valid booking returns Failed");
+
+            yield return new TestCaseData(
+                new BookRoomRequest { RoomId = 999, UserId = 1, BookingDate = DateTime.Parse("2024-01-01T09:00:00"), MeetingTitle = "Meeting" },
+                BookState.Failed
+            ).SetName("Unknown room returns Failed");
+
+            yield return new TestCaseData(
+                new BookRoomRequest { RoomId = 1, UserId = 999, BookingDate = DateTime.Parse("2024-01-01T09:00:00"), MeetingTitle = "Meeting" },
+                BookState.Failed
+            ).SetName("Unknown user returns Failed");
         }
         #endregion
     }
