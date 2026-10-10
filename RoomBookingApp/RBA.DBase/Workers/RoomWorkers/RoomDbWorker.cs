@@ -105,8 +105,8 @@ namespace RBA.DBase.Workers.RoomWorkers
                 return BookState.Failed;
             }
 
-            appDbContext.Rooms.Where(x => x.Id == unbookRoomRequest.RoomId).FirstOrDefault().ReservationsId.Remove(unbookRoomRequest.ReservationId);
-            appDbContext.Reservations.Remove(reservationModel);
+            appDbContext.Rooms.Where(x => x.Id == unbookRoomRequest.RoomId)?.FirstOrDefault()?.ReservationsId?.Remove(unbookRoomRequest.ReservationId);
+            appDbContext.Reservations?.Remove(reservationModel);
 
             await appDbContext.SaveChangesAsync();
             return BookState.Cancelled;
