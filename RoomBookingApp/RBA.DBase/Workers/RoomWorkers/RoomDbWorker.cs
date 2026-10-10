@@ -63,11 +63,18 @@ namespace RBA.DBase.Workers.RoomWorkers
         {
             try
             {
-                return appDbContext.Rooms?.
-                    Where(x =>
-                    x.Id == checkRoomAvailableRequest.RoomId)?
-                    .Select(xx =>
-                    xx.ReservationsId.Count() > 0 ? RoomState.Available : RoomState.Occupied)?.FirstOrDefault() ?? RoomState.Occupied;
+                //return appDbContext.Rooms?.
+                //    Where(x =>
+                //    x.Id == checkRoomAvailableRequest.RoomId)?
+                //    .Select(xx =>
+                //    xx.ReservationsId != null && xx.ReservationsId.Count() > 0 ? RoomState.Occupied : RoomState.Available)?.FirstOrDefault() ?? RoomState.Occupied;
+
+                var room = await appDbContext.Rooms?.Where(x => x.Id == checkRoomAvailableRequest.RoomId)?.FirstOrDefaultAsync();
+                var reservation = await appDbContext.Reservations?.Where(r => r.Date == checkRoomAvailableRequest.Date && r.RoomId == checkRoomAvailableRequest.RoomId)?.FirstOrDefaultAsync();
+                if (reservation != null)
+                    return RoomState.Occupied;
+                else
+                    return RoomState.Available;
             }
             catch
             {
