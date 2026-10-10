@@ -70,7 +70,10 @@ namespace RoomBookingApp.Controllers
         [HttpPost("addRoom")]
         public async Task<IActionResult> AddRoom([FromBody] NewRoomRequest request)
         {            
-            return Ok(await _adminManagment.InsertNewRoom(request));
+            var newRoom = await _adminManagment.InsertNewRoom(request);
+            if (newRoom == null)
+                return BadRequest();
+            return Ok(newRoom);
         }
 
         [Authorize]
