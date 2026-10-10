@@ -64,7 +64,8 @@ namespace RBA.DBase.Tests
             //first booking should be successful
             await new RoomDbWorker(context, loggerMock.Object).BookingRoom(request);
             //second booking should fail as the room is already booked
-            var result = await new RoomDbWorker(context, loggerMock.Object).BookingRoom(request);
+            using var context2 = new AppDbContext(_contextOptions);
+            var result = await new RoomDbWorker(context2, loggerMock.Object).BookingRoom(request);
             Assert.That(result, Is.EqualTo(BookState.Failed));
         }
 
