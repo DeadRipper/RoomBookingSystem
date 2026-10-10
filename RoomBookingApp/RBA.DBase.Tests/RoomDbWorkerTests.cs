@@ -57,6 +57,17 @@ namespace RBA.DBase.Tests
             Assert.That(result, Is.EqualTo(BookState.Confirmed));
         }
 
+        [Test, TestCaseSource(nameof(GetTestBookingRequests))]
+        public async Task Check_double_booking_room_and_first_room_already_booked(BookRoomRequest request)
+        {
+            using var context = new AppDbContext(_contextOptions);
+            //first booking should be successful
+            await new RoomDbWorker(context, loggerMock.Object).BookingRoom(request);
+            //second booking should fail as the room is already booked
+            var result = await new RoomDbWorker(context, loggerMock.Object).BookingRoom(request);
+            Assert.That(result, Is.EqualTo(BookState.Failed));
+        }
+
         public static IEnumerable<BookRoomRequest> GetTestBookingRequests()
         {
             return new List<BookRoomRequest>
