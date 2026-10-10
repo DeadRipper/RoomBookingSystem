@@ -1,5 +1,5 @@
-﻿using Castle.Core.Logging;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 using Moq;
 using RBA.DBase.DBRelations;
 using RBA.DBase.Managers.DbWorker;
@@ -13,8 +13,7 @@ namespace RBA.DBase.Tests
     public class Tests
     {
         private DbContextOptions<AppDbContext> _contextOptions;
-        private RoomDbWorker _roomDbWorker;
-        private Mock<Microsoft.Extensions.Logging.ILogger<RoomDbWorker>> loggerMock;
+        private Mock<ILogger<RoomDbWorker>> loggerMock;
 
         [SetUp]
         public async Task Setup()
@@ -47,22 +46,30 @@ namespace RBA.DBase.Tests
             context.Rooms.Add(requestedRoom);
             await context.SaveChangesAsync();
 
-            loggerMock = new Mock<Microsoft.Extensions.Logging.ILogger<RoomDbWorker>>();
+            loggerMock = new Mock<ILogger<RoomDbWorker>>();
         }
 
-        [Test, TestCase(1, "2024-01-01T09:00:00", "Test Meeting", 1, "Test User")]
-        public async Task Check_success_booking_room(int RoomId, DateTime BookingDate, string MeetingTitle, int UserId, string UserName)
+        [Test, TestCaseSource(nameof(GetTestBookingRequests))]
+        public async Task Check_success_booking_room(BookRoomRequest request)
         {
             using var context = new AppDbContext(_contextOptions);
-            var result = await new RoomDbWorker(context, loggerMock.Object).BookingRoom(new BookRoomRequest
-            {
-                RoomId = RoomId,
-                BookingDate = BookingDate,
-                MeetingTitle = MeetingTitle,
-                UserId = UserId,
-                UserName = UserName
-            });
+            var result = await new RoomDbWorker(context, loggerMock.Object).BookingRoom(request);
             Assert.That(result, Is.EqualTo(BookState.Confirmed));
+        }
+
+        public static IEnumerable<BookRoomRequest> GetTestBookingRequests()
+        {
+            return new List<BookRoomRequest>
+            {
+                new BookRoomRequest
+                {
+                    RoomId = 1,
+                    BookingDate = DateTime.Parse("2024-01-01T09:00:00"),
+                    MeetingTitle = "Test Meeting",
+                    UserId = 1,
+                    UserName = "Test User"
+                }
+            };
         }
     }
 }
