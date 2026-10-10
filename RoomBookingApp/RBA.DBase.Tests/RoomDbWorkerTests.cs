@@ -87,6 +87,7 @@ namespace RBA.DBase.Tests
         [Test, TestCaseSource(nameof(ValidCheckRoomAvailableRequests))]
         public async Task Check_room_available_failed(CheckRoomAvailableRequest request)
         {
+            // Context 1 — seed
             using var context = new AppDbContext(_contextOptions);
             context.Reservations.Add(new ReservationModel
             {
@@ -95,9 +96,13 @@ namespace RBA.DBase.Tests
                 UserId = 1,
                 MeetingTitle = "Test Meeting"
             });
-            context.Rooms.First(r => r.Id == request.RoomId).ReservationsId.Add(1); // Simulate a reservation
+            context.Rooms.First(r => r.Id == request.RoomId).ReservationsId.Add(1);
             context.SaveChanges();
-            var result = await new RoomDbWorker(context, loggerMock.Object).GetRoomAvailabilityState(request);
+
+            // Context 2 — act (fresh, like a real HTTP request would get)
+            using var context2 = new AppDbContext(_contextOptions);
+            var result = await new RoomDbWorker(context2, loggerMock.Object).GetRoomAvailabilityState(request);
+
             Assert.That(result, Is.EqualTo(RoomState.Occupied));
         }
 
