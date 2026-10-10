@@ -31,8 +31,8 @@ namespace RBA.DBase.Workers.RoomWorkers
             try
             {
                 room = appDbContext?.Rooms?.Where(x => x.Id == bookRoomRequest.RoomId)?.FirstOrDefault();
-                var reserv = appDbContext?.Reservations.Any(r => r.Date == bookRoomRequest.BookingDate);
-                if ((room == null || !reserv.HasValue) && reserv.Value)
+                var reserv = appDbContext?.Reservations.Where(r => r.Date == bookRoomRequest.BookingDate && r.RoomId == bookRoomRequest.RoomId)?.FirstOrDefault();
+                if (room == null || reserv != null)
                     return BookState.Failed;
             }
             catch
@@ -67,7 +67,7 @@ namespace RBA.DBase.Workers.RoomWorkers
                     Where(x =>
                     x.Id == checkRoomAvailableRequest.RoomId)?
                     .Select(xx =>
-                    xx.ReservationsId == null ? RoomState.Available : RoomState.Occupied)?.FirstOrDefault() ?? RoomState.Occupied;
+                    xx.ReservationsId.Count() > 0 ? RoomState.Available : RoomState.Occupied)?.FirstOrDefault() ?? RoomState.Occupied;
             }
             catch
             {
@@ -78,10 +78,12 @@ namespace RBA.DBase.Workers.RoomWorkers
 
         public async Task<BookState> UnbookingRoom(UnbookRoomRequest unbookRoomRequest)
         {
+            RoomModel room;
+            ReservationModel reservationModel;
             try
             {
-                var roomSearch = appDbContext.Rooms.Where(x => x.Id == unbookRoomRequest.RoomId);
-                if (roomSearch != null && roomSearch.FirstOrDefault() == null)
+                room = appDbContext.Rooms.Where(x => x.Id == unbookRoomRequest.RoomId)?.FirstOrDefault();
+                if (room == null)
                     return BookState.Failed;
             }
             catch
@@ -89,8 +91,23 @@ namespace RBA.DBase.Workers.RoomWorkers
                 logger.LogError($"Error while unbooking room for Room ID: {unbookRoomRequest.RoomId}");
                 throw;
             }
-            var room = appDbContext.Rooms.FirstOrDefault(x => x.Id == unbookRoomRequest.RoomId);
-            room.ReservationsId = null;
+
+            if (room.ReservationsId != null)
+            {
+                reservationModel = appDbContext.Reservations?.FirstOrDefault(r => r.Id == unbookRoomRequest.ReservationId);
+                if (reservationModel == null)
+                {
+                    return BookState.Failed;
+                }   
+            }
+            else
+            {
+                return BookState.Failed;
+            }
+
+            appDbContext.Rooms.Where(x => x.Id == unbookRoomRequest.RoomId).FirstOrDefault().ReservationsId.Remove(unbookRoomRequest.ReservationId);
+            appDbContext.Reservations.Remove(reservationModel);
+
             await appDbContext.SaveChangesAsync();
             return BookState.Cancelled;
         }
