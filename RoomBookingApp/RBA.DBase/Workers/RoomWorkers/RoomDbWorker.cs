@@ -84,16 +84,8 @@ namespace RBA.DBase.Workers.RoomWorkers
                 return BookState.Failed;
             }
 
-            ReservationModel reservation;
-
-            if (unbookRoomRequest.RoomId != 0 || unbookRoomRequest.RoomId != null)
-            {
-                reservation = await appDbContext.Reservations?.Where(r => r.Id == unbookRoomRequest.ReservationId && r.RoomId == unbookRoomRequest.RoomId)?.FirstOrDefaultAsync();
-            }
-            else
-            {
-                reservation = await appDbContext.Reservations?.Where(r => r.Id == unbookRoomRequest.ReservationId)?.FirstOrDefaultAsync();
-            }
+            var reservation = await appDbContext.Reservations
+                .FirstOrDefaultAsync(r => r.Id == unbookRoomRequest.ReservationId && r.RoomId == unbookRoomRequest.RoomId);
 
             if (reservation == null)
             {
