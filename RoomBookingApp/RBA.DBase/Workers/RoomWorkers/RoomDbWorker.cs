@@ -78,36 +78,22 @@ namespace RBA.DBase.Workers.RoomWorkers
 
         public async Task<BookState> UnbookingRoom(UnbookRoomRequest unbookRoomRequest)
         {
-            RoomModel room;
-            ReservationModel reservationModel;
-            try
+            if (unbookRoomRequest.ReservationId <= 0)
             {
-                room = appDbContext.Rooms.Where(x => x.Id == unbookRoomRequest.RoomId)?.FirstOrDefault();
-                if (room == null)
-                    return BookState.Failed;
-            }
-            catch
-            {
-                logger.LogError($"Error while unbooking room for Room ID: {unbookRoomRequest.RoomId}");
-                throw;
-            }
-
-            if (room.ReservationsId != null)
-            {
-                reservationModel = appDbContext.Reservations?.FirstOrDefault(r => r.Id == unbookRoomRequest.ReservationId);
-                if (reservationModel == null)
-                {
-                    return BookState.Failed;
-                }   
-            }
-            else
-            {
+                logger.LogError("Invalid reservation ID while attempting to unbook room.");
                 return BookState.Failed;
             }
 
-            appDbContext.Rooms.Where(x => x.Id == unbookRoomRequest.RoomId).FirstOrDefault().ReservationsId.Remove(unbookRoomRequest.ReservationId);
-            appDbContext.Reservations.Remove(reservationModel);
+            var reservation = await appDbContext.Reservations
+                .FirstOrDefaultAsync(r => r.Id == unbookRoomRequest.ReservationId && r.RoomId == unbookRoomRequest.RoomId);
 
+            if (reservation == null)
+            {
+                logger.LogError($"Reservation with ID: {unbookRoomRequest.ReservationId} not found while unbooking room.");
+                return BookState.Failed;
+            }
+
+            appDbContext.Reservations.Remove(reservation);
             await appDbContext.SaveChangesAsync();
             return BookState.Cancelled;
         }
