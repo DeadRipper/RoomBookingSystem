@@ -1,5 +1,4 @@
-﻿using Azure.Core;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Moq;
 using RBA.DBase.DBRelations;
@@ -119,16 +118,16 @@ namespace RBA.DBase.Tests
             Assert.That(result, Is.EqualTo(BookState.Cancelled));
         }
 
-        [Test, TestCaseSource(nameof(InvalidUnbookRoomRequests))]
-        public async Task Check_unbook_false_with_no_room_and_reservation(UnbookRoomRequest request)
+        [Test, TestCaseSource(nameof(InvalidUnbookRoomRequestsWithoutRoom))]
+        public async Task Check_unbook_false_without_room(UnbookRoomRequest request)
         {
             using var context = new AppDbContext(_contextOptions);
             var result = await new RoomDbWorker(context, loggerMock.Object).UnbookingRoom(request);
             Assert.That(result, Is.EqualTo(BookState.Failed));
         }
 
-        [Test, TestCaseSource(nameof(InvalidUnbookRoomRequests))]
-        public async Task Check_unbook_false_with_room_and_no_reservation(UnbookRoomRequest request)
+        [Test, TestCaseSource(nameof(InvalidUnbookRoomRequestsWithoutReservationId))]
+        public async Task Check_unbook_false_without_reservation_id(UnbookRoomRequest request)
         {
             using var context = new AppDbContext(_contextOptions);
             var result = await new RoomDbWorker(context, loggerMock.Object).UnbookingRoom(request);
@@ -157,9 +156,13 @@ namespace RBA.DBase.Tests
             yield return new UnbookRoomRequest { ReservationId = 1, RoomId = 1 };
         }
 
-        public static IEnumerable<UnbookRoomRequest> InvalidUnbookRoomRequests()
+        public static IEnumerable<UnbookRoomRequest> InvalidUnbookRoomRequestsWithoutRoom()
         {
             yield return new UnbookRoomRequest { ReservationId = 1 };
+        }
+
+        public static IEnumerable<UnbookRoomRequest> InvalidUnbookRoomRequestsWithoutReservationId()
+        {
             yield return new UnbookRoomRequest { RoomId = 1 };
         }
         #endregion
