@@ -7,6 +7,7 @@ using RBA.DBase.Workers.RoomWorkers;
 using RBA.Models.Models.RoomBookingModels;
 using RBA.Models.Request.RoomBooking.BookRoom;
 using RBA.Models.Request.RoomBooking.CheckRoomAvailable;
+using RBA.Models.Request.RoomBooking.UnbookRoom;
 using RBA.Models.States;
 
 namespace RBA.DBase.Tests
@@ -42,8 +43,17 @@ namespace RBA.DBase.Tests
                 Email = "testuser@example.com",
                 Password = "password"
             };
+            var resevationModel = new ReservationModel
+            {
+                Id = 1,
+                RoomId = 1,
+                Date = DateTime.Parse("2024-01-01T09:00:00"),
+                MeetingTitle = "Test Meeting",
+                UserId = 1
+            };
             context.Users.Add(userModel);
             context.Rooms.Add(requestedRoom);
+            context.Reservations.Add(resevationModel);
             await context.SaveChangesAsync();
 
             loggerMock = new Mock<ILogger<RoomDbWorker>>();
@@ -53,6 +63,9 @@ namespace RBA.DBase.Tests
         public async Task Check_success_booking_room(BookRoomRequest request)
         {
             using var context = new AppDbContext(_contextOptions);
+            // Clear reservations to simulate room availability
+            context.Reservations.RemoveRange(context.Reservations);
+            context.SaveChanges();
             var result = await new RoomDbWorker(context, loggerMock.Object).BookingRoom(request);
             Assert.That(result, Is.EqualTo(BookState.Confirmed));
         }
@@ -76,9 +89,12 @@ namespace RBA.DBase.Tests
         }
 
         [Test, TestCaseSource(nameof(ValidCheckRoomAvailableRequests))]
-        public async Task Check_room_available_succes(CheckRoomAvailableRequest request)
+        public async Task Check_room_available_success(CheckRoomAvailableRequest request)
         {
             using var context = new AppDbContext(_contextOptions);
+            // Clear reservations to simulate room availability
+            context.Reservations.RemoveRange(context.Reservations);
+            context.SaveChanges();
             var result = await new RoomDbWorker(context, loggerMock.Object).GetRoomAvailabilityState(request);
             Assert.That(result, Is.EqualTo(RoomState.Available));
         }
@@ -88,21 +104,34 @@ namespace RBA.DBase.Tests
         {
             // Context 1 — seed
             using var context = new AppDbContext(_contextOptions);
-            context.Reservations.Add(new ReservationModel
-            {
-                RoomId = request.RoomId,
-                Date = request.Date,
-                UserId = 1,
-                MeetingTitle = "Test Meeting"
-            });
-            context.Reservations.First(r => r.Id == request.RoomId);
-            context.SaveChanges();
-
             // Context 2 — act (fresh, like a real HTTP request would get)
             using var context2 = new AppDbContext(_contextOptions);
             var result = await new RoomDbWorker(context2, loggerMock.Object).GetRoomAvailabilityState(request);
-
             Assert.That(result, Is.EqualTo(RoomState.Occupied));
+        }
+
+        [Test, TestCaseSource(nameof(ValidUnbookRoomRequests))]
+        public async Task Check_unbook_success_with_room_and_reservation(UnbookRoomRequest request)
+        {
+            using var context = new AppDbContext(_contextOptions);
+            var result = await new RoomDbWorker(context, loggerMock.Object).UnbookingRoom(request);
+            Assert.That(result, Is.EqualTo(BookState.Cancelled));
+        }
+
+        [Test, TestCaseSource(nameof(InvalidUnbookRoomRequestsWithoutRoom))]
+        public async Task Check_unbook_false_without_room(UnbookRoomRequest request)
+        {
+            using var context = new AppDbContext(_contextOptions);
+            var result = await new RoomDbWorker(context, loggerMock.Object).UnbookingRoom(request);
+            Assert.That(result, Is.EqualTo(BookState.Failed));
+        }
+
+        [Test, TestCaseSource(nameof(InvalidUnbookRoomRequestsWithoutReservationId))]
+        public async Task Check_unbook_false_without_reservation_id(UnbookRoomRequest request)
+        {
+            using var context = new AppDbContext(_contextOptions);
+            var result = await new RoomDbWorker(context, loggerMock.Object).UnbookingRoom(request);
+            Assert.That(result, Is.EqualTo(BookState.Failed));
         }
 
         #region [Test request fixtures]
@@ -120,6 +149,21 @@ namespace RBA.DBase.Tests
         public static IEnumerable<CheckRoomAvailableRequest> ValidCheckRoomAvailableRequests()
         {
             yield return new CheckRoomAvailableRequest { RoomId = 1, Date = DateTime.Parse("2024-01-01T09:00:00") };
+        }
+
+        public static IEnumerable<UnbookRoomRequest> ValidUnbookRoomRequests()
+        {
+            yield return new UnbookRoomRequest { ReservationId = 1, RoomId = 1 };
+        }
+
+        public static IEnumerable<UnbookRoomRequest> InvalidUnbookRoomRequestsWithoutRoom()
+        {
+            yield return new UnbookRoomRequest { ReservationId = 1 };
+        }
+
+        public static IEnumerable<UnbookRoomRequest> InvalidUnbookRoomRequestsWithoutReservationId()
+        {
+            yield return new UnbookRoomRequest { RoomId = 1 };
         }
         #endregion
     }

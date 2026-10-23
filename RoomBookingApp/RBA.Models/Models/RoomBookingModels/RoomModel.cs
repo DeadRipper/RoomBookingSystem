@@ -1,6 +1,7 @@
 ﻿using RBA.Models.States;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Text;
 
 namespace RBA.Models.Models.RoomBookingModels

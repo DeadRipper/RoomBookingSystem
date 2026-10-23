@@ -41,7 +41,6 @@ namespace RoomBookingApp.Controllers
             return Ok(new UnbookRoomResponse
             {
                 RequestId = request.RequestId,
-                RoomId = request.RoomId,
                 BookState = await _roomManagment.UnbookRoom(request)
             });
         }

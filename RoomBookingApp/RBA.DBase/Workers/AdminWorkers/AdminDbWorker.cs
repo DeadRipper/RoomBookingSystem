@@ -59,12 +59,20 @@ namespace RBA.DBase.Workers.AdminWorkers
 
         public async Task<RoomModel> InsertNewRoom(NewRoomRequest request)
         {
+            var getAmenity = await appDbContext.Amenities.FirstOrDefaultAsync(a => a.Id == request.Amenities.Id);
+
+            if (getAmenity == null)
+            {
+                logger.LogWarning($"Insert new room attempt failed for Room Name: {request.Name}");
+                return null;
+            }
+
             var newRoom = new RoomModel
             {
                 Name = request.Name,
                 Floor = request.Floor,
                 Capacity = request.Capacity,
-                Amenities = await appDbContext.Amenities.FirstOrDefaultAsync(x => x.Id == request.Amenities.Id) ?? new AmenityModel(),
+                Amenities = getAmenity,
                 Image = request.Image
             };
             appDbContext.Rooms.Add(newRoom);
