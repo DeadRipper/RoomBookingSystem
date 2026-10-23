@@ -15,7 +15,6 @@ using RBA.DBase.Workers.AuthWorkers;
 using RBA.DBase.Workers.RoomWorkers;
 using RBA.DBase.Workers.UserWorkers;
 using RoomBookingApp.Helpers;
-using RoomBookingApp.Middlewares;
 
 namespace RoomBookingApp
 {
@@ -53,8 +52,10 @@ namespace RoomBookingApp
 
             builder.Services.AddHttpLogging(logging =>
             {
-                logging.LoggingFields = HttpLoggingFields.Request | HttpLoggingFields.Response;
+                logging.LoggingFields = HttpLoggingFields.Duration;
             });
+
+            builder.Services.AddHttpLoggingInterceptor<HttpLoggingInterceptor>();
 
             builder.Services.AddAuthentication(cfg =>
             {

@@ -27,8 +27,6 @@ namespace RBA.DBase.Workers.AdminWorkers
                 return false;
             }
 
-            var room = await appDbContext.Rooms.FirstOrDefaultAsync(r => r.ReservationsId.Contains(reservation.Id));
-            room?.ReservationsId.Remove(reservation.Id);
             appDbContext.Reservations.Remove(reservation);
             await appDbContext.SaveChangesAsync();
             return true;
@@ -67,8 +65,7 @@ namespace RBA.DBase.Workers.AdminWorkers
                 Floor = request.Floor,
                 Capacity = request.Capacity,
                 Amenities = await appDbContext.Amenities.FirstOrDefaultAsync(x => x.Id == request.Amenities.Id) ?? new AmenityModel(),
-                Image = request.Image,
-                ReservationsId = new List<int>()
+                Image = request.Image
             };
             appDbContext.Rooms.Add(newRoom);
             await appDbContext.SaveChangesAsync();

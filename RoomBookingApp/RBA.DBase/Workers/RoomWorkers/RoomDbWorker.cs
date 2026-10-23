@@ -92,21 +92,11 @@ namespace RBA.DBase.Workers.RoomWorkers
                 throw;
             }
 
-            if (room.ReservationsId != null)
+            reservationModel = appDbContext.Reservations?.Where(r => r.Id == unbookRoomRequest.ReservationId)?.FirstOrDefault();
+            if (reservationModel != null)
             {
-                reservationModel = appDbContext.Reservations?.FirstOrDefault(r => r.Id == unbookRoomRequest.ReservationId);
-                if (reservationModel == null)
-                {
-                    return BookState.Failed;
-                }   
+                appDbContext.Reservations.Remove(reservationModel);
             }
-            else
-            {
-                return BookState.Failed;
-            }
-
-            appDbContext.Rooms.Where(x => x.Id == unbookRoomRequest.RoomId).FirstOrDefault().ReservationsId.Remove(unbookRoomRequest.ReservationId);
-            appDbContext.Reservations.Remove(reservationModel);
 
             await appDbContext.SaveChangesAsync();
             return BookState.Cancelled;
